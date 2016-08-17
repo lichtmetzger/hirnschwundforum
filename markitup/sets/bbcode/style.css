@@ -17,120 +17,210 @@
 .markItUp .markItUpButton5 a {
 	background-image:url(images/heading.png);
 }
-
 .markItUp .markItUpButton6 a {
+	background-image:url(images/spoiler.png);
+}
+
+.markItUp .markItUpButton7 a {
 	background-image:url(images/picture.png); 
 }
-.markItUp .markItUpButton7 a {
+.markItUp .markItUpButton8 a {
 	background-image:url(images/link.png);
 }
 
 
-.markItUp .markItUpButton8 a {
+.markItUp .markItUpButton9 a {
 	background-image:url(images/color_swatch.png);
 }
-	.markItUp .markItUpButton8 ul {
+	.markItUp .markItUpButton9 ul {
 		width:81px;
 		padding:1px;	
 	}
-	.markItUp .markItUpButton8  li {
+	.markItUp .markItUpButton9  li {
 		border:1px solid white;
 		width:25px;	height:25px;
 		overflow:hidden;
 		padding:0px; margin:0px;
 		float:left;
 	}
-	.markItUp .markItUpButton8 ul a {
+	.markItUp .markItUpButton9 ul a {
 		width:25px;	height:25px;
 	}
-	.markItUp .markItUpButton8 ul a:hover {
+	.markItUp .markItUpButton9 ul a:hover {
 		background-color:none;
 	}
 	
-	.markItUp .markItUpButton8 .col1-1 a {
+	.markItUp .markItUpButton9 .col1-1 a {
 		background:yellow;
 	}
-	.bbcode .markItUpButton8 .col1-2 a {
+	.bbcode .markItUpButton9 .col1-2 a {
 		background:orange;
 	}
-	.bbcode .markItUpButton8 .col1-3 a {
+	.bbcode .markItUpButton9 .col1-3 a {
 		background:red;
 	}
 	
-	.markItUp .markItUpButton8 .col2-1 a {
+	.markItUp .markItUpButton9 .col2-1 a {
 		background:blue;
 	}
-	.markItUp .markItUpButton8 .col2-2 a {
+	.markItUp .markItUpButton9 .col2-2 a {
 		background:purple;
 	}
-	.markItUp .markItUpButton8 .col2-3 a {
+	.markItUp .markItUpButton9 .col2-3 a {
 		background:green;
 	}
 	
-	.markItUp .markItUpButton8 .col3-1 a {
+	.markItUp .markItUpButton9 .col3-1 a {
 		background:white;
 	}
-	.markItUp .markItUpButton8 .col3-2 a {
+	.markItUp .markItUpButton9 .col3-2 a {
 		background:gray;
 	}
-	.markItUp .markItUpButton8 .col3-3 a {
+	.markItUp .markItUpButton9 .col3-3 a {
 		background:black;
 	}
 
-.markItUp .markItUpButton9 a	{
+.markItUp .markItUpButton10 a	{
 	background-image:url(images/list-bullet.png);
 }
-.markItUp .markItUpButton10 a	{
+.markItUp .markItUpButton11 a	{
 	background-image:url(images/list-numeric.png);
 }
-.markItUp .markItUpButton11 a	{
+.markItUp .markItUpButton12 a	{
 	background-image:url(images/list-item.png);
 }
-.markItUp .markItUpButton12 a	{
+.markItUp .markItUpButton13 a	{
 	background-image:url(images/comment.png);
 }
-.markItUp .markItUpButton13 a	{
+.markItUp .markItUpButton14 a	{
 	background-image:url(images/user_comment.png);
 }
-.markItUp .markItUpButton14 a	{
+.markItUp .markItUpButton15 a	{
 	background-image:url(images/tag.png);
 }
 
-.markItUp .markItUpButton15 a	{
-	background-image:url(/img/smilies/smile.png);
-}
 .markItUp .markItUpButton16 a	{
-	background-image:url(/img/smilies/neutral.png);
+	background-image:url(../../../img/smilies/smile.png);
+	background-size: 20px 20px;
 }
 .markItUp .markItUpButton17 a	{
-	background-image:url(/img/smilies/sad.png);
+	background-image:url(../../../img/smilies/neutral.png);
+	background-size: 20px 20px;
 }
 .markItUp .markItUpButton18 a	{
-	background-image:url(/img/smilies/big_smile.png);
+	background-image:url(../../../img/smilies/sad.png);
+	background-size: 20px 20px;
 }
 .markItUp .markItUpButton19 a	{
-	background-image:url(/img/smilies/yikes.png);
+	background-image:url(../../../img/smilies/big_smile.png);
+	background-size: 20px 20px;
 }
 .markItUp .markItUpButton20 a	{
-	background-image:url(/img/smilies/wink.png);
+	background-image:url(../../../img/smilies/yikes.png);
+	background-size: 20px 20px;
 }
 .markItUp .markItUpButton21 a	{
-	background-image:url(/img/smilies/hmm.png);
+	background-image:url(../../../img/smilies/wink.png);
+	background-size: 20px 20px;
 }
 .markItUp .markItUpButton22 a	{
-	background-image:url(/img/smilies/tongue.png);
+	background-image:url(../../../img/smilies/hmm.png);
+	background-size: 20px 20px;
 }
 .markItUp .markItUpButton23 a	{
-	background-image:url(/img/smilies/lol.png);
+	background-image:url(../../../img/smilies/tongue.png);
+	background-size: 20px 20px;
 }
 .markItUp .markItUpButton24 a	{
-	background-image:url(/img/smilies/mad.png);
+	background-image:url(../../../img/smilies/lol.png);
+	background-size: 20px 20px;
 }
 .markItUp .markItUpButton25 a	{
-	background-image:url(/img/smilies/roll.png);
+	background-image:url(../../../img/smilies/mad.png);
+	background-size: 20px 20px;
 }
 .markItUp .markItUpButton26 a	{
-	background-image:url(/img/smilies/cool.png);
-}
+	background-image:url(images/more.png);
+}	
+	.markItUp .markItUpButton26 ul {
+		width:135px;
+		padding:1px;	
+	}
+	.markItUp .markItUpButton26  li {
+		border:1px solid white;
+		width:25px;	height:25px;
+		overflow:hidden;
+		padding:0px; margin:0px;
+		float:left;
+	}
+	.markItUp .markItUpButton26 ul a {
+		width:20px;	height:20px;
+	}
+	.markItUp .markItUpButton26 ul a:hover {
+		background-color:none;
+	}
+	
+	.markItUp .markItUpButton26 .col1-1 a {
+		background-image:url(../../../img/smilies/roll.png);
+	}
+	.markItUp .markItUpButton26 .col1-2 a {
+		background-image:url(../../../img/smilies/shock.png);
+	}
+	.markItUp .markItUpButton26 .col1-3 a {
+		background-image:url(../../../img/smilies/heart.png);
+	}
+	.markItUp .markItUpButton26 .col1-4 a {
+		background-image:url(../../../img/smilies/cool.png);
+	}
+	.markItUp .markItUpButton26 .col1-5 a {
+		background-image:url(../../../img/smilies/love.png);
+	}
+	
+	.markItUp .markItUpButton26 .col2-1 a {
+		background-image:url(../../../img/smilies/cry.png); 
+	}
+	.markItUp .markItUpButton26 .col2-2 a {
+		background-image:url(../../../img/smilies/oops.png);   
+	}
+	.markItUp .markItUpButton26 .col2-3 a {
+		background-image:url(../../../img/smilies/sleep.png);
+	}
+	.markItUp .markItUpButton26 .col2-4 a {
+		background-image:url(../../../img/smilies/angel.png); 
+	}
+	.markItUp .markItUpButton26 .col2-5 a {
+		background-image:url(../../../img/smilies/sick.png);
+	}
+	
+	.markItUp .markItUpButton26 .col3-1 a {
+		background-image:url(../../../img/smilies/teen.png);
+	}
+	.markItUp .markItUpButton26 .col3-2 a {
+		background-image:url(../../../img/smilies/speechless.png);
+	}
+	.markItUp .markItUpButton26 .col3-3 a {
+		background-image:url(../../../img/smilies/kiss.png);
+	}
+	.markItUp .markItUpButton26 .col3-4 a {
+		background-image:url(../../../img/smilies/ultralol.png);
+	}
+	.markItUp .markItUpButton26 .col3-5 a {
+		background-image:url(../../../img/smilies/shit.png);
+	}
 
-
+	.markItUp .markItUpButton26 .col4-1 a {
+		background-image:url(../../../img/smilies/roto.png);
+	}
+	.markItUp .markItUpButton26 .col4-2 a {
+		background-image:url(../../../img/smilies/zank.png);
+	}
+	.markItUp .markItUpButton26 .col4-3 a {
+		background-image:url(../../../img/smilies/voegsm.png);
+		background-size: 20px 20px;
+	}
+	.markItUp .markItUpButton26 .col4-4 a {
+		background-image:url(../../../img/smilies/ugly.png);
+	}
+	.markItUp .markItUpButton26 .col4-5 a {
+		background-image:url(../../../img/smilies/smokin.gif);
+	}

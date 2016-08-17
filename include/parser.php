@@ -40,12 +40,17 @@ $re_list = '%\[list(?:=([1a*]))?+\]((?:[^\[]*+(?:(?!\[list(?:=[1a*])?+\]|\[/list
 
 // Here you can add additional smilies if you like (please note that you must escape single quote and backslash)
 $smilies = array(
+	'0:)' => 'angel.png',
 	':)' => 'smile.png',
 	'=)' => 'smile.png',
 	':|' => 'neutral.png',
 	'=|' => 'neutral.png',
+	':((' => 'cry.png',
+	':--' => 'speechless.png',
 	':(' => 'sad.png',
 	'=(' => 'sad.png',
+	':*' => 'kiss.png',
+	':DD' => 'ultralol.png',
 	':D' => 'big_smile.png',
 	'=D' => 'big_smile.png',
 	':o' => 'yikes.png',
@@ -57,7 +62,25 @@ $smilies = array(
 	':lol:' => 'lol.png',
 	':mad:' => 'mad.png',
 	':rolleyes:' => 'roll.png',
-	':cool:' => 'cool.png');
+	':cool:' => 'cool.png',
+	':roto:' => 'roto.png',
+	':zank:' => 'zank.png',
+	':voegasm:' => 'voegsm.png',
+	':voegsm:' => 'voegsm.png',
+	':ugly:' => 'ugly.png',
+	':heart:'=> 'heart.png',
+	':love:'=> 'love.png',
+	'<3' => 'heart.png',
+	':shock:' => 'shock.png',
+	':smoke:' => 'smokin.gif',
+	':oops:'=> 'oops.png',
+	':Zzz:'=> 'sleep.png',
+	':x' => 'sick.png',
+	':X' => 'sick.png',
+	':teen:' => 'teen.png',
+	':shit:' => 'shit.png',
+	':kirin:' => 'kirin.png'
+	);
 
 //
 // Make sure all BBCodes are lower case and do a little cleanup

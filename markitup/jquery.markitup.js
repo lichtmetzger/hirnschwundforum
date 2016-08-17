@@ -206,7 +206,8 @@
 					key   = (button.key) ? 'accesskey="'+button.key+'"' : '';
 					if (button.separator) {
 						li = $('<li class="markItUpSeparator">'+(button.separator||'')+'</li>').appendTo(ul);
-					} else {
+					}
+					else {
 						i++;
 						for (j = levels.length -1; j >= 0; j--) {
 							t += levels[j]+"-";

@@ -12,7 +12,8 @@
 	text-decoration:none;
 }
 .markItUp  {
-	width:700px;
+	max-width:720px;
+	min-width:320px;
 	margin:5px 0 5px 0;
 }
 .markItUpContainer  {
@@ -22,7 +23,7 @@
 	font:12px 'Courier New', Courier, monospace;
 	padding:5px;
 	width:690px;
-	height:320px;
+	height:200px;
 	clear:both;
 	line-height:18px;
 	overflow:auto;
@@ -116,3 +117,10 @@
 	color:#FFF;
 	background-color:#000;
 }
+
+/*.markItUpHeader ul li.markItUpButton26 ul li {
+	list-style:none;
+	float:left;
+	margin-right:5px;
+	position:relative;
+}*/
