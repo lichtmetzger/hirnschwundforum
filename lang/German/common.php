@@ -176,4 +176,6 @@ $lang_common = array(
 
 'Online'							=>	'Online',
 
+'Warning mod'					=>	'Verwarnungen',
+
 );

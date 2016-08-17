@@ -67,7 +67,7 @@ if ($db->num_rows($result))
 	<?php		
 		while ($warning_data = $db->fetch_assoc($result))
 		{
-			 $topic = ($warning_data['topic_subject'] != '') ? '<a href="viewtopic.php?id='.$warning_data['topic_id'].'#p'.$warning_data['post_id'].'">'.pun_htmlspecialchars($warning_data['topic_subject']).'</a>' : $lang_warning['No info'];
+			 $topic = ($warning_data['topic_subject'] != '') ? '<a href="viewtopic.php?pid='.$warning_data['post_id'].'#p'.$warning_data['post_id'].'">'.pun_htmlspecialchars($warning_data['topic_subject']).'</a>' : $lang_warning['No info'];
 	?>
 				<tr>
 					<td class="tcl"><?php echo pun_htmlspecialchars($warning_data['username']) ?></td>

@@ -81,10 +81,47 @@ if (isset($_POST['add']))
 	$db->query('INSERT INTO '.$db->prefix.'warning (username, user_id, reason, num_warning, warning_by, warning_by_id, topic_id, post_id, time, topic_subject) VALUES (\''.$db->escape($_POST['username']).'\', '.$user_id.', \''.$db->escape($_POST['reason']).'\', '.$warnings.', \''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', '.$tid.', '.$pid.', '.time().', '.$subject_db.')') or error('Unable to insert data', __FILE__, __LINE__, $db->error());
 	
 	// Ban the user if necessary
-	if ($warnings == $pun_config['o_warning_max'])
+	// Warning level 3 - 24 hours
+	if ($warnings == 3)
 	{
 		$banned = 1;
-		$db->query('INSERT INTO '.$db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES(\''.$db->escape($_POST['username']).'\', NULL, NULL, \''.$db->escape($reason).'\', NULL, '.$pun_user['id'].')') or error('Unable to add ban', __FILE__, __LINE__, $db->error());
+		$t = time();
+		$db->query('INSERT INTO '.$db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES(\''.$db->escape($_POST['username']).'\', NULL, NULL, \'Automatische Sperre (24h)\', '.($t + 86400).', '.$pun_user['id'].')') or error('Unable to add ban', __FILE__, __LINE__, $db->error());
+		
+		// Regenerate the bans cache
+		if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
+			require PUN_ROOT.'include/cache.php';
+
+		generate_bans_cache();
+	}
+	// Warning level 4 - 48 hours
+	elseif ($warnings == 4) {
+		$banned = 1;
+		$t = time();
+		$db->query('INSERT INTO '.$db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES(\''.$db->escape($_POST['username']).'\', NULL, NULL, \'Automatische Sperre (48h)\', '.($t + 172800).', '.$pun_user['id'].')') or error('Unable to add ban', __FILE__, __LINE__, $db->error());
+		
+		// Regenerate the bans cache
+		if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
+			require PUN_ROOT.'include/cache.php';
+
+		generate_bans_cache();
+	}
+	// Warning level 5 - one week
+	elseif ($warnings == 5) {
+		$banned = 1;
+		$t = time();
+		$db->query('INSERT INTO '.$db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES(\''.$db->escape($_POST['username']).'\', NULL, NULL, \'Automatische Sperre (Woche)\', '.($t + 604800).', '.$pun_user['id'].')') or error('Unable to add ban', __FILE__, __LINE__, $db->error());
+		
+		// Regenerate the bans cache
+		if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
+			require PUN_ROOT.'include/cache.php';
+
+		generate_bans_cache();
+	}
+	// Warning level 6 - permanent
+	elseif ($warnings == 6) {
+		$banned = 1;
+		$db->query('INSERT INTO '.$db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES(\''.$db->escape($_POST['username']).'\', NULL, NULL, \'Automatische Dauersperre\', NULL, '.$pun_user['id'].')') or error('Unable to add ban', __FILE__, __LINE__, $db->error());
 		
 		// Regenerate the bans cache
 		if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -268,7 +305,7 @@ else // If not, we show the "Show text" form
 		<h2><span><?php echo $lang_warning['Warning mod'] ?></span></h2>
 		<div class="box">
 			<div class="inbox">
-				<p><?php echo $lang_warning['Explanation 1'].' '.sprintf($lang_warning['Explanation 2'], $pun_config['o_warning_max']) ?></p>
+				<p><?php echo $lang_warning['Explanation 1'].'<ul style="margin-left:20px;"><li>3 Verwarnungen: 24h Bann</li><li>4 Verwarnungen: 48h Bann</li><li>5 Verwarnungen: eine Woche Bann</li><li>6 Verwarnungen: Dauerhafte Sperre</li></ul>' ?></p>
 			</div>
 		</div>
  
@@ -305,19 +342,19 @@ else // If not, we show the "Show text" form
 								</tr>
 							</table>
 						</div>
-						<legend><?php echo $lang_warning['Change configuration'] ?></legend>
+						<!--<legend><?php //echo $lang_warning['Change configuration'] ?></legend>
 						<div class="infldset">
 							<table class="aligntop" cellspacing="0">
 								<tr>
 									<th scope="row">
-										<form id="example" method="post" action="<?php echo pun_htmlspecialchars(PLUGIN_URL) ?>">
-											<?php echo $lang_warning['Max warnings info'] ?><div><input type="text" value="<?php echo $pun_config['o_warning_max'] ?>" maxlength="2" size="1" name="max_warnings"></div>
-											<div><input type="submit" name="config" value="<?php echo $lang_common['Submit'] ?>" /></div>
+										<form id="example" method="post" action="<?php //echo pun_htmlspecialchars(PLUGIN_URL) ?>">
+											<?php //echo $lang_warning['Max warnings info'] ?><div><input type="text" value="<?php //echo $pun_config['o_warning_max'] ?>" maxlength="2" size="1" name="max_warnings"></div>
+											<div><input type="submit" name="config" value="<?php //echo $lang_common['Submit'] ?>" /></div>
 										</form>
 									</th>
 								</tr>
 							</table>
-						</div>
+						</div>-->
 					</fieldset>
 
 		</div>
