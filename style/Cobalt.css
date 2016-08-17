@@ -219,7 +219,9 @@ html, body {
 	}
 
 .pun {
-	max-width: 1070px;
+	/*schmatzler: change width*/
+	max-width: 864px;
+	min-width: 320px;
 	width: 95%;
 	margin: 0 auto;
 	padding: 12px 20px;
@@ -856,6 +858,13 @@ html, body {
 	text-decoration: underline
 	}
 
+/*schmatzler: sig to bottom*/
+.pun div.postsignature {
+	position:relative;
+	bottom:0;
+	clear:both;
+}
+	
 .pun .codebox {
 	border-style: solid;
 	border-width: 1px;

@@ -1,0 +1,67 @@
+/*lol*/
+.postbody .postleft dt strong {
+  display: none;
+}
+
+.postbody .postleft dt:before {
+  content: "Holger";
+  font-size: 1.231em;
+  font-weight: bold;
+}
+
+.postbody .postleft .postavatar {
+display: none !important;
+}
+
+.postbody .postleft .usertitle:after {
+content: "";
+display: block;
+background: url("https://hirnschwund.net/p.png") 50% 50% no-repeat;
+width: 190px;
+height: 190px;
+margin: 10px 0;
+background-size: auto 100%;
+}
+
+a[href*="profile.php"]:before {
+content: "Holger";
+visibility: visible;
+}
+
+a[href*="profile.php"] {
+visibility: hidden;
+overflow: hidden;
+width: 40px;
+display:inline-block;
+white-space: nowrap;
+}
+
+#viewprofile .infldset dd {
+visibility: hidden;
+}
+
+#viewprofile .infldset dd:before {
+content: "Holger";
+visibility: visible;
+}
+
+.byuser {
+visibility: hidden;
+}
+
+.byuser:before {
+content: "Holger";
+visibility: visible;
+}
+
+#brdstats #onlinelist dd {
+  visibility: hidden;
+}
+
+#brdstats #onlinelist dd:before {
+  content: "Holger,";
+  visibility: visible;
+  width:40px;
+  display:inline-block;
+white-space: nowrap;
+}

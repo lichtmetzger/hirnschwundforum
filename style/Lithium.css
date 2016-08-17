@@ -215,11 +215,13 @@
 
 html, body {
 	margin: 0;
-	padding: 0
+	padding: 0;
 	}
 
 .pun {
-	max-width: 1070px;
+	/*schmatzler: change width*/
+	max-width: 864px;
+	min-width: 320px;
 	width: 95%;
 	margin: 0 auto;
 	padding: 12px 20px;
@@ -855,6 +857,13 @@ html, body {
 .pun .postfootright a:hover, .pun .postfootright a:active {
 	text-decoration: underline
 	}
+
+/*schmatzler: sig to bottom*/
+.pun div.postsignature {
+	position:relative;
+	bottom:0;
+	clear:both;
+}
 
 .pun .codebox {
 	border-style: solid;

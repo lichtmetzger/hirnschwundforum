@@ -169,7 +169,6 @@ img.header-logo {
 ----------------------------------------------------------------*/
 
 .pun {
-	/*max-width: 1070px;*/
 	/*schmatzler: change width*/
 	max-width: 864px;
 	min-width: 320px;
@@ -187,7 +186,7 @@ img.header-logo {
 
 .pun .punwrap {
 /*	schmatzler: remove borders
- * 	border: 1px solid;
+ *	border: 1px solid;
 	border-radius: 10px;*/
 	padding: 18px;
 }
@@ -1429,6 +1428,10 @@ html, body, .pun {
 	color: #333;
 }
 
+.pun {
+  min-width: 320px;
+}
+
 .pun .punwrap {
 	background: #fff;
 	border-color: #e1d9ca;
@@ -1443,7 +1446,7 @@ html, body, .pun {
 }
 
 .pun a, .pun a:link, .pun a:visited {
-	color: #990000;
+	color: #D64800;
 }
 
 .pun a:hover, .pun a:active, .pun a:focus {
@@ -1451,7 +1454,7 @@ html, body, .pun {
 }
 
 .pun .postmsg .postimg a:link img, .pun .postmsg .postimg a:visited img {
-	border-color: #990000;
+	border-color: #D64800;
 }
 
 .pun .postmsg .postimg a:hover img, .pun .postmsg .postimg a:active img, .pun .postmsg .postimg a:focus img {
@@ -1462,11 +1465,11 @@ html, body, .pun {
 ----------------------------------------------------------------*/
 
 #brdmenu {
-	background: #990000;
+	background: #F09130;
 }
 
 #brdmenu a, #brdmenu a:link, #brdmenu a:visited {
-	background: #990000;
+	background: #F09130;
 	border-color: #fff;
 	color: #fff;
 	/* schmatzler: shadow in menu text*/
@@ -1594,7 +1597,7 @@ html, body, .pun {
 }
 
 #puninstall form#install .forminfo {
-	background: #990000;
+	background: #D64800;
 	color: #fff;
 }
 

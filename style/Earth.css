@@ -25,6 +25,11 @@ html, body, .pun table, .pun div, .pun form, .pun p, .pun h1, .pun h2, .pun h3, 
 	padding-right: 1px;
 }
 
+/*schmatzler: header logo*/
+img.header-logo {
+  margin-top: -16px;
+}
+
 /* Content Defaults
 ----------------------------------------------------------------*/
 
@@ -164,7 +169,8 @@ html, body, .pun table, .pun div, .pun form, .pun p, .pun h1, .pun h2, .pun h3, 
 ----------------------------------------------------------------*/
 
 .pun {
-	max-width: 1070px;
+	/*schmatzler: change width*/
+	max-width: 864px;
 	min-width: 320px;
 	margin: 0 auto;
 	padding: 30px 40px;
@@ -179,8 +185,9 @@ html, body, .pun table, .pun div, .pun form, .pun p, .pun h1, .pun h2, .pun h3, 
 }
 
 .pun .punwrap {
-	border: 1px solid;
-	border-radius: 10px;
+/*	schmatzler: remove borders
+ *	border: 1px solid;
+	border-radius: 10px;*/
 	padding: 18px;
 }
 
@@ -693,6 +700,13 @@ MAIN POSTS
 	margin-bottom: -1px;
 	overflow: hidden;
 	position: relative;
+	/*schmatzler: space between posts*/
+	margin-bottom:15px;
+}
+
+/*Links should stay directly unter last post*/
+.pun .postlinksb {
+  margin-top:-15px;
 }
 
 * html .pun .blockpost {
@@ -917,6 +931,13 @@ MAIN POSTS
 
 .pun .blockform .postsignature, .pun .blockpost .postsignature {
 	font-size: 0.923em;
+}
+
+/*schmatzler: sig to bottom*/
+.pun div.postsignature {
+	position:relative;
+	bottom:0;
+	clear:both;
 }
 
 .pun .codebox {
@@ -1402,7 +1423,8 @@ COLOUR SCHEME
 ----------------------------------------------------------------*/
 
 html, body, .pun {
-	background: #eaede2;
+	/*schmatzler: change background*/
+	background: #C3C3C3;
 	color: #333;
 }
 
@@ -1410,6 +1432,8 @@ html, body, .pun {
 	background: #fff;
 	border-color: #ccd7c1;
 	color: #526550;
+	/* schmatzler: shadow in bodybox */
+	box-shadow: 1px 6px 26px -6px rgba(0,0,0,0.45);
 }
 
 #brdtitle #brddesc, .pun .pagepost, #brdstats #onlinelist, #brdfooter #searchlinks, #brdfooter #modcontrols,
@@ -1443,7 +1467,10 @@ html, body, .pun {
 #brdmenu a, #brdmenu a:link, #brdmenu a:visited {
 	background: #32671d;
 	border-color: #fff;
-	color: #e3e3c8;
+	color: #fff;
+	/* schmatzler: shadow in menu text*/
+	text-shadow: 1px 1px 3px rgba(37, 37, 37, 1);
+	font-weight:bold;
 }
 
 #brdmenu a:hover, #brdmenu a:active, #brdmenu a:focus {
@@ -1902,6 +1929,11 @@ html, body, .pun {
 }
 
 @media only screen and (max-width: 400px) {
+	/*schmatzler: fix from fluxbb bug report*/
+	#brdstats .conr {
+		float: left;
+		text-align: left;
+	}
 	#brdwelcome .conr {
 		float: left;
 	}
