@@ -429,7 +429,12 @@ else if (isset($_GET['find_ban']))
 		{
 
 			$actions = '<a href="admin_bans.php?edit_ban='.$ban_data['id'].'">'.$lang_admin_common['Edit'].'</a> | <a href="admin_bans.php?del_ban='.$ban_data['id'].'">'.$lang_admin_common['Remove'].'</a>';
-			$expire = format_time($ban_data['expire'], true);
+			
+			//Format time with seconds for the banlist - schmatzler
+			//$expire = format_time($ban_data['expire'], true);
+			$expire = date("d.m.Y H:i", $ban_data['expire']);
+			if ($ban_data['expire'] == '')
+			      $expire = $lang_common['Never'];
 
 ?>
 				<tr>
