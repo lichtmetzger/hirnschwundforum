@@ -3,6 +3,17 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <pun_head>
+	<!-- markitup! bbcode editor -->
+	<script type="text/javascript" src="markitup/jquery.markitup.js"></script>
+	<script type="text/javascript" src="markitup/sets/bbcode/set.js"></script>
+	<link rel="stylesheet" type="text/css" href="markitup/skins/simple/style.css" />
+	<link rel="stylesheet" type="text/css" href="markitup/sets/bbcode/style.css" />
+	<script type="text/javascript" >
+		$(document).ready(function() {
+			$("textarea").markItUp(bbcodeSettings);
+		});
+	</script>
+	<!-- /markitup! bbcode editor -->
 </head>
 
 <body>
