@@ -722,7 +722,7 @@ function handle_url_tag($url, $link = '', $bbcode = false)
 		global $mediajs;
 		$mediajs = true;
 
-		return '<a href="'.$full_url.'" rel="nofollow">'.$link.'</a>';
+		return '<a href="'.$full_url.'" rel="nofollow" target="_blank" style="font-weight:bold;">'.$link.'</a>';
 	}
 }
 
