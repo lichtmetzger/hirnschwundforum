@@ -166,4 +166,6 @@ $lang_common = array(
 'Size unit PiB'						=>	'%s PiB',
 'Size unit EiB'						=>	'%s EiB',
 
+'Hidden text' => 'Spoiler!',
+
 );
