@@ -2393,7 +2393,7 @@ function generate_user_location($url)
 			$username = '<a href="profile.php?id='.$id.'">'.pun_htmlspecialchars($db->result($result)).'</a>';
 			$location = sprintf($lang_online['viewing profile'], $username);
 		break;
-		case stristr($url, 'pms_'):
+		case stristr($url, 'pmsnew'):
 			$location = $lang_online['private messaging'];
 		break;
 		case stristr($url, 'admin'):
