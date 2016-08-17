@@ -108,7 +108,8 @@ if ($is_admmod)
 if ($cur_topic['closed'] == '0')
 {
 	if (($cur_topic['post_replies'] == '' && $pun_user['g_post_replies'] == '1') || $cur_topic['post_replies'] == '1' || $is_admmod)
-		$post_link = "\t\t\t".'<p class="postlink conr"><a href="post.php?tid='.$id.'">'.$lang_topic['Post reply'].'</a></p>'."\n";
+		//schmatzler: add margin to prevent overlapping in mobile view
+		$post_link = "\t\t\t".'<p class="postlink conr" style="margin-left:15px;"><a href="post.php?tid='.$id.'">'.$lang_topic['Post reply'].'</a></p>'."\n";
 	else
 		$post_link = '';
 }
@@ -119,7 +120,8 @@ else
 	if ($is_admmod)
 		$post_link .= ' / <a href="post.php?tid='.$id.'">'.$lang_topic['Post reply'].'</a>';
 
-	$post_link = "\t\t\t".'<p class="postlink conr">'.$post_link.'</p>'."\n";
+	//schmatzler: add margin to prevent overlapping in mobile view
+	$post_link = "\t\t\t".'<p class="postlink conr" style="margin-left:15px;">'.$post_link.'</p>'."\n";
 }
 
 
@@ -170,9 +172,10 @@ if (!$pun_user['is_guest'] && $pun_config['o_topic_subscriptions'] == '1')
 
 	if ($cur_topic['is_subscribed'])
 		// I apologize for the variable naming here. It's a mix of subscription and action I guess :-)
-		$subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.$lang_topic['Is subscribed'].' - </span><a id="unsubscribe" href="misc.php?action=unsubscribe&amp;tid='.$id.$token_url.'">'.$lang_topic['Unsubscribe'].'</a></p>'."\n";
+		//schmatzler: removed old classes and assigned better styling to prevent overlaps
+		$subscraction = "\t\t".'<p style="display:inline-block;float:right;"><span>'.$lang_topic['Is subscribed'].' - </span><a id="unsubscribe" href="misc.php?action=unsubscribe&amp;tid='.$id.$token_url.'">'.$lang_topic['Unsubscribe'].'</a></p>'."\n";
 	else
-		$subscraction = "\t\t".'<p class="subscribelink clearb"><a href="misc.php?action=subscribe&amp;tid='.$id.$token_url.'">'.$lang_topic['Subscribe'].'</a></p>'."\n";
+		$subscraction = "\t\t".'<p style="display:inline-block;float:right;"><a href="misc.php?action=subscribe&amp;tid='.$id.$token_url.'">'.$lang_topic['Subscribe'].'</a></p>'."\n";
 }
 else
 	$subscraction = '';
@@ -438,14 +441,15 @@ if ($cur_post['num_warnings'] > 0)
 	<div class="inbox crumbsplus">
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
+<!--schmatzler: switched this around to prevent overlapping in mobile view -->
 <?php echo $post_link ?>
+<?php echo $subscraction ?>
 		</div>
 		<ul class="crumbs">
 			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
 			<li><span>»&#160;</span><a href="viewforum.php?id=<?php echo $cur_topic['forum_id'] ?>"><?php echo pun_htmlspecialchars($cur_topic['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><strong><a href="viewtopic.php?id=<?php echo $id ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></strong></li>
 		</ul>
-<?php echo $subscraction ?>
 		<div class="clearer"></div>
 	</div>
 </div>
