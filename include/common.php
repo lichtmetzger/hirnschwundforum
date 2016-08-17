@@ -169,6 +169,11 @@ else
 if ($pun_config['o_maintenance'] && $pun_user['g_id'] > PUN_ADMIN && !defined('PUN_TURN_OFF_MAINT'))
 	maintenance_message();
 
+if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/warning_mod.php'))
+    require PUN_ROOT.'lang/'.$pun_user['language'].'/warning_mod.php';
+else
+    require PUN_ROOT.'lang/English/warning_mod.php';
+
 // Load cached bans
 if (file_exists(FORUM_CACHE_DIR.'cache_bans.php'))
 	include FORUM_CACHE_DIR.'cache_bans.php';

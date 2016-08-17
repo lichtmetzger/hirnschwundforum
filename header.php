@@ -255,6 +255,9 @@ else
 	$page_statusinfo[] = '<li><span>'.$lang_common['Logged in as'].' <strong>'.pun_htmlspecialchars($pun_user['username']).'</strong></span></li>';
 	$page_statusinfo[] = '<li><span>'.sprintf($lang_common['Last visit'], format_time($pun_user['last_visit'])).'</span></li>';
 
+if ($pun_user['num_warnings_unread'] > 0)
+	$page_statusinfo[] = '<li class="reportlink"><span><strong><a href="warnings.php?uid='.$pun_user['id'].'">'.sprintf($lang_warning['New warning'], $pun_user['num_warnings_unread']).'</a></strong></span></li>';
+
 	if ($pun_user['is_admmod'])
 	{
 		if ($pun_config['o_report_method'] == '0' || $pun_config['o_report_method'] == '2')

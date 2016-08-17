@@ -236,7 +236,7 @@ require PUN_ROOT.'include/poll/poll_viewtopic.php';
 
 // Retrieve the posts (and their respective poster/online status)
 // add "g.g_pm, u.messages_enable," - New PMS
-$result = $db->query('SELECT u.email, u.title, u.url, u.social_profile_links, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, u.messages_enable, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, p.edit_post, g.g_id, g.g_user_title, g.g_pm, g.g_promote_next_group, o.user_id AS is_online FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT u.email, u.title, u.url, u.social_profile_links, u.location, u.signature, u.email_setting, u.num_posts, u.num_warnings, u.registered, u.admin_note, u.messages_enable, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, p.edit_post, g.g_id, g.g_user_title, g.g_pm, g.g_promote_next_group, o.user_id AS is_online FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 while ($cur_post = $db->fetch_assoc($result))
 {
 	$post_count++;
@@ -286,6 +286,9 @@ while ($cur_post = $db->fetch_assoc($result))
 
 			if ($pun_config['o_show_post_count'] == '1' || $pun_user['is_admmod'])
 				$user_info[] = '<dd><span>'.$lang_topic['Posts'].' '.forum_number_format($cur_post['num_posts']).'</span></dd>';
+
+if ($cur_post['num_warnings'] > 0)
+	$user_info[] = '<dd><span><a href="warnings.php?uid='.$cur_post['poster_id'].'">'.$lang_warning['Warnings'].' '.forum_number_format($cur_post['num_warnings']).'</a></span></dd>';
 
 			// Now let's deal with the contact links (Email and URL)
 			if ((($cur_post['email_setting'] == '0' && !$pun_user['is_guest']) || $pun_user['is_admmod']) && $pun_user['g_send_email'] == '1')
@@ -369,6 +372,11 @@ while ($cur_post = $db->fetch_assoc($result))
 			$post_actions[] = '<li class="postdelete"><span><a href="delete.php?id='.$cur_post['id'].'">'.$lang_topic['Delete'].'</a></span></li>';
 			$post_actions[] = '<li class="postedit"><span><a href="edit.php?id='.$cur_post['id'].'">'.$lang_topic['Edit'].'</a></span></li>';
 		}
+
+		//warnmod
+		if ($cur_post['g_id'] != PUN_ADMIN && $cur_post['g_id'] != PUN_MOD)
+			$post_actions[] = '<li class="postreport"><span><a href="admin_loader.php?plugin=AMP_Warning_mod.php&amp;tid='.$id.'&amp;pid='.$cur_post['id'].'&amp;uid='.$cur_post['poster_id'].'">'.$lang_warning['Warn'].'</a></span></li>';
+
 		$post_actions[] = '<li class="postquote"><span><a href="post.php?tid='.$id.'&amp;qid='.$cur_post['id'].'">'.$lang_topic['Quote'].'</a></span></li>';
 	}
 
