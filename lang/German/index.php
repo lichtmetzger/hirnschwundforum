@@ -15,6 +15,7 @@ $lang_index = array(
 'Online'		=>	'Gerade online:', // Wie zum Beispiel "Online: Mitglied A, Mitglied B etc."
 'Board info'	=>	'Board-Informationen',
 'Board stats'	=>	'Board-Statistik',
-'User info'		=>	'Mitglieder-Information'
-
+'User info'		=>	'Mitglieder-Information',
+'Bots Online'   =>      'Bots online:',
+'Bots online 1'   =>      'Bots online: %s',
 );

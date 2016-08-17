@@ -144,15 +144,19 @@ if ($db->num_rows($result))
 		$user_ids[] = $cur_user_id;
 
 	// Grab the users
-	$result = $db->query('SELECT u.id, u.username, u.title, u.num_posts, u.registered, g.g_id, g.g_user_title FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id WHERE u.id IN('.implode(',', $user_ids).') ORDER BY '.$sort_by.' '.$sort_dir.', u.id ASC') or error('Unable to fetch user list', __FILE__, __LINE__, $db->error());
+	require PUN_ROOT.'lang/'.$pun_user['language'].'/online.php';
+
+$result = $db->query('SELECT u.id, u.username, u.title, u.num_posts, u.registered, g.g_user_title, o.user_id AS is_online FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1) WHERE u.id IN('.implode(',', $user_ids).') ORDER BY '.$sort_by.' '.$sort_dir.', u.id ASC') or error('Unable to fetch user list', __FILE__, __LINE__, $db->error());
 
 	while ($user_data = $db->fetch_assoc($result))
 	{
+
 		$user_title_field = get_title($user_data);
+                $is_online = ($user_data['is_online'] == $user_data['id']) ? '<img src="img/status_online.png" title="'.$lang_online['user is online'].'" />' : '<img src="img/status_offline.png" title="'.$lang_online['user is offline'].'" />';
 
 ?>
 				<tr>
-					<td class="tcl"><?php echo '<a href="profile.php?id='.$user_data['id'].'">'.pun_htmlspecialchars($user_data['username']).'</a>' ?></td>
+					<td class="tcl"><?php echo $is_online.' <a href="profile.php?id='.$user_data['id'].'">'.pun_htmlspecialchars($user_data['username']).'</a>'; ?></td>
 					<td class="tc2"><?php echo $user_title_field ?></td>
 <?php if ($show_post_count): ?>					<td class="tc3"><?php echo forum_number_format($user_data['num_posts']) ?></td>
 <?php endif; ?>

@@ -21,6 +21,9 @@ if ($id < 1)
 // Load the viewforum.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/forum.php';
 
+require PUN_ROOT.'lang/'.$pun_user['language'].'/index.php';
+require PUN_ROOT.'lang/'.$pun_user['language'].'/online.php';
+
 // Fetch some info about the forum
 if (!$pun_user['is_guest'])
 	$result = $db->query('SELECT f.forum_name, f.redirect_url, f.moderators, f.num_topics, f.sort_by, fp.post_topics, s.user_id AS is_subscribed FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_subscriptions AS s ON (f.id=s.forum_id AND s.user_id='.$pun_user['id'].') LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$id) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
@@ -155,6 +158,9 @@ $result = $db->query('SELECT id FROM '.$db->prefix.'topics WHERE forum_id='.$id.
 if ($db->num_rows($result))
 {
 	$topic_ids = array();
+	
+	$forum_has_posts = 1;
+	
 	for ($i = 0; $cur_topic_id = $db->result($result, $i); $i++)
 		$topic_ids[] = $cur_topic_id;
 
@@ -304,7 +310,126 @@ else
 			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
 			<li><span>»&#160;</span><strong><a href="viewforum.php?id=<?php echo $id ?>"><?php echo pun_htmlspecialchars($cur_forum['forum_name']) ?></a></strong></li>
 		</ul>
-<?php echo (!empty($forum_actions) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $forum_actions).'</p>'."\n" : '') ?>
+<?php echo (!empty($forum_actions) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $forum_actions).'</p>'."\n" : '');
+
+if ($pun_config['o_users_online'] == '1')
+{
+	$post_ids = $users = $guests_in_forum = array();
+
+	$result = $db->query('SELECT '.$db->prefix.'posts.id FROM '.$db->prefix.'posts INNER JOIN '.$db->prefix.'topics ON '.$db->prefix.'topics.id = '.$db->prefix.'posts.topic_id INNER JOIN '.$db->prefix.'forums ON '.$db->prefix.'forums.id = '.$db->prefix.'topics.forum_id WHERE '.$db->prefix.'forums.id = '.$id) or error('Unable to fetch posts in this forum', __FILE__, __LINE__, $db->error());
+	while ($post = $db->fetch_assoc($result))
+		$post_ids[] = $post['id'];
+
+	$online = $db->query("SELECT user_id, ident, currently, logged FROM ".$db->prefix."online WHERE currently LIKE '%viewtopic.php%' OR currently LIKE '%viewforum%' AND idle = 0", true) or error('Unable to fetch users online in this topic', __FILE__, __LINE__, $db->error());
+	while ($user_online = $db->fetch_assoc($online))
+	{
+		if (strpos($user_online['currently'], '&p=')!== false)
+		{
+			preg_match('~&p=(.*)~', $user_online['currently'], $replace);
+			$user_online['currently'] = str_replace($replace[0], '', $user_online['currently']);
+		}
+		$tid = filter_var($user_online['currently'], FILTER_SANITIZE_NUMBER_INT);
+	
+		if (strpos($user_online['currently'], 'viewforum.php?id='.$id.'') !== false)
+		{
+			if ($user_online['user_id'] == 1)
+				$guests_in_forum[] = $user_online['ident'];
+			else
+			{
+
+				if ($pun_user['g_view_users'] == 0)
+					$member = pun_htmlspecialchars($user_online['ident']);
+				else
+				{
+					$time = format_time($user_online['logged']);
+					$reading = sprintf($lang_online['reading forum 2'], $time);
+	
+					$member = '<a href="profile.php?id='.$user_online['user_id'].'" title="'.$reading.'">'.pun_htmlspecialchars($user_online['ident']).'</a>';
+
+				}
+
+				$users[] = $member;
+			}
+
+		}
+		elseif (strpos($user_online['currently'], '?pid') !== false)
+		{
+			if ($forum_has_posts == 1)
+			{
+				if (in_array($tid, $post_ids))
+				{
+					if ($user_online['user_id'] == 1)
+						$guests_in_forum[] = $user_online['ident'];
+					else
+					{
+
+						if ($pun_user['g_view_users'] == 0)
+							$member = pun_htmlspecialchars($user_online['ident']);
+						else
+						{
+							$time = format_time($user_online['logged']);
+							$reading = sprintf($lang_online['reading forum'], $time);
+
+							$member = '<a href="profile.php?id='.$user_online['user_id'].'" title="'.$reading.'">'.pun_htmlspecialchars($user_online['ident']).'</a>';
+
+						}
+
+						$users[] = $member;
+					}
+				}
+			}
+		}
+		elseif (strpos($user_online['currently'], '?id') !== false)
+		{
+			if ($forum_has_posts == 1)
+			{
+				if (in_array($tid, $topic_ids))
+				{ 
+					if ($user_online['user_id'] == 1)
+						$guests_in_forum[] = $user_online['ident'];
+					else
+					{
+
+						if ($pun_user['g_view_users'] == 0)
+							$member = pun_htmlspecialchars($user_online['ident']);
+						else
+						{
+							$time = format_time($user_online['logged']);
+							$reading = sprintf($lang_online['reading forum'], $time);
+
+							$member = '<a href="profile.php?id='.$user_online['user_id'].'" title="'.$reading.'">'.pun_htmlspecialchars($user_online['ident']).'</a>';
+						}
+
+						$users[] = $member;
+					}
+				}
+			}
+		}
+	}		 
+
+	$num_guests = count($guests_in_forum);
+	$num_users = count($users);
+?>
+<div id="brdstats" class="block">
+	<div class="box">
+		<div class="inbox">
+			
+<?php
+	if ($num_users > 0)
+		$users = implode(', ', $users);
+	else
+		$users = $lang_online['no users'];
+
+		echo "\t\t\t".'<dl id="onlinelist" class="clearb">'.sprintf($lang_online['online forum'], $num_guests, $users)."\n";
+
+?>			
+			
+		</div>
+	</div>
+</div>
+<?php 
+}
+?>
 		<div class="clearer"></div>
 	</div>
 </div>

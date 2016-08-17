@@ -409,6 +409,116 @@ else if ($action == 'unsubscribe')
 	}
 }
 
+else if ($action == 'leaders' && $pun_config['o_users_online'] == '1')
+{
+
+if ($pun_user['g_read_board'] == '0')
+	message($lang_common['No view'], false, '403 Forbidden');
+
+// Load the userlist.php language file
+require PUN_ROOT.'lang/'.$pun_user['language'].'/online.php';
+
+if ($pun_user['g_view_users'] == '0')
+	message($lang_common['No permission'], false, '403 Forbidden');
+
+
+	$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_common['User list'], $lang_online['the team']);
+	require PUN_ROOT.'header.php';
+?>
+<div id="users1" class="blocktable">
+	<h2><span><?php echo $lang_online['admin'] ?></span></h2>
+	<div class="box">
+		<div class="inbox">
+			<table cellspacing="0">
+			<thead>
+				<tr>
+					<th class="tcl" scope="col"><?php echo $lang_common['Username'] ?></th>
+					<th class="tc2" scope="col"><?php echo $lang_online['forums'] ?></th>
+					<th class="tcr" scope="col"><?php echo $lang_online['currently 1'] ?></th>
+				</tr>
+			</thead>
+			<tbody>
+<?php
+
+	$result = $db->query('SELECT '.$db->prefix.'users.id AS id, '.$db->prefix.'users.username, o.currently FROM '.$db->prefix.'users LEFT JOIN '.$db->prefix.'online AS o ON o.user_id = '.$db->prefix.'users.id WHERE '.$db->prefix.'users.group_id = '.PUN_ADMIN) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+	while ($user_data = $db->fetch_assoc($result))
+	{
+		if ($user_data['currently'] == '' || !$user_data['currently']) 
+			$user_data['currently'] = '-';
+?>
+				<tr>
+					<td class="tcl"><a href="profile.php?id=<?php echo $user_data['id']; ?>"><?php echo $user_data['username']; ?></a></td>
+
+				<td class="tc2"><?php echo $lang_online['all forums'] ?></td>
+
+					<td class="tcr"><?php echo generate_user_location($user_data['currently'], $lang_online, $user_data['username']); ?></td>
+				</tr>
+<?php
+	}
+?>
+			</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div id="users1" class="blocktable">
+	<h2><span><?php echo $lang_online['mod'] ?></span></h2>
+	<div class="box">
+		<div class="inbox">
+			<table cellspacing="0">
+			<thead>
+				<tr>
+					<th class="tcl" scope="col"><?php echo $lang_common['Username'] ?></th>
+					<th class="tc2" scope="col"><?php echo $lang_online['forums'] ?></th>
+					<th class="tcr" scope="col"><?php echo $lang_online['currently 1'] ?></th>
+				</tr>
+			</thead>
+			<tbody>
+<?php
+
+	$result = $db->query('SELECT '.$db->prefix.'users.id, '.$db->prefix.'users.username, o.currently FROM '.$db->prefix.'users LEFT JOIN '.$db->prefix.'online AS o ON o.user_id = '.$db->prefix.'users.id INNER JOIN '.$db->prefix.'groups ON '.$db->prefix.'groups.g_id = '.$db->prefix.'users.group_id WHERE '.$db->prefix.'groups.g_moderator = \'1\'') or error('Unable to fetch user info2', __FILE__, __LINE__, $db->error());
+	while ($user_data = $db->fetch_assoc($result))
+	{
+		$forums = array();
+		$count = 0;
+	
+		$query = $db->query('SELECT f.id AS fid, f.forum_name, f.moderators FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id WHERE f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
+
+
+				while ($cur_forum = $db->fetch_assoc($query))
+				{
+					$moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
+					if (in_array($user_data['id'], $moderators))
+					{
+						++$count;
+						$forums[] = '<option value="'.$cur_forum['fid'].'">'.$cur_forum['forum_name'].'</option>';
+					}
+
+
+				}
+				
+		if ($user_data['currently'] == '' || !$user_data['currently']) 
+			$user_data['currently'] = '-';
+?>
+				<tr>
+					<td class="tcl"><a href="profile.php?id=<?php echo $user_data['id']; ?>"><?php echo $user_data['username']; ?></td>
+
+				<td class="tc2"><form id="qjump" method="get" action="viewforum.php"><select name="id" onchange="window.location=('viewforum.php?id='+this.options[this.selectedIndex].value)"><option value=""><?php echo $count.$lang_online['total forums']; ?></option><?php echo implode('', $forums); ?></select></form></td>
+
+					<td class="tcr"><?php echo generate_user_location($user_data['currently'], $lang_online, $user_data['username']); ?></td>
+				</tr>
+<?php
+	}
+?>
+			</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<?php
+	require PUN_ROOT.'footer.php';
+
+}
 
 else
 	message($lang_common['Bad request'], false, '404 Not Found');

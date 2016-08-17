@@ -135,6 +135,7 @@ function check_cookie(&$pun_user)
 
 		$pun_user['is_guest'] = false;
 		$pun_user['is_admmod'] = $pun_user['g_id'] == PUN_ADMIN || $pun_user['g_moderator'] == '1';
+		$pun_user['is_bot'] = false;
 	}
 	else
 		set_default_user();
@@ -271,6 +272,8 @@ function set_default_user()
 
 	$remote_addr = get_remote_address();
 
+	require PUN_ROOT.'include/bots.inc.php';
+
 	// Fetch guest user
 	$result = $db->query('SELECT u.*, g.*, o.logged, o.last_post, o.last_search FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id LEFT JOIN '.$db->prefix.'online AS o ON o.ident=\''.$db->escape($remote_addr).'\' WHERE u.id=1') or error('Unable to fetch guest information', __FILE__, __LINE__, $db->error());
 	if (!$db->num_rows($result))
@@ -310,6 +313,7 @@ function set_default_user()
 	$pun_user['style'] = $pun_config['o_default_style'];
 	$pun_user['is_guest'] = true;
 	$pun_user['is_admmod'] = false;
+	$pun_user['is_bot'] = (strpos($remote_addr, '[Bot]') !== false);
 }
 
 
@@ -510,28 +514,50 @@ function check_username($username, $exclude_id = null)
 //
 function update_users_online()
 {
-	global $db, $pun_config;
+	global $db, $pun_config, $pun_user, $online_users, $online_guests, $cur_position;
 
 	$now = time();
+	$cur_o_timeout = $now - $pun_config['o_timeout_online'];
 
 	// Fetch all online list entries that are older than "o_timeout_online"
-	$result = $db->query('SELECT user_id, ident, logged, idle FROM '.$db->prefix.'online WHERE logged<'.($now-$pun_config['o_timeout_online'])) or error('Unable to fetch old entries from online list', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT * FROM '.$db->prefix.'online') or error('Unable to fetch old entries from online list', __FILE__, __LINE__, $db->error());
 	while ($cur_user = $db->fetch_assoc($result))
-	{
-		// If the entry is a guest, delete it
-		if ($cur_user['user_id'] == '1')
-			$db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($cur_user['ident']).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+	{	
+	
+		if ($cur_user['logged'] < $cur_o_timeout)
+		{
+			// If the entry is a guest, delete it
+			if ($cur_user['user_id'] == '1')
+				$db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($cur_user['ident']).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+			else
+			{
+				// If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
+				if ($cur_user['logged'] < ($now-$pun_config['o_timeout_visit']))
+				{
+					$db->query('UPDATE '.$db->prefix.'users SET last_visit='.$cur_user['logged'].' WHERE id='.$cur_user['user_id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
+					$db->query('DELETE FROM '.$db->prefix.'online WHERE user_id='.$cur_user['user_id']) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+				}
+				else if ($cur_user['idle'] == '0')
+					$db->query('UPDATE '.$db->prefix.'online SET idle=1 WHERE user_id='.$cur_user['user_id']) or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+			}
+		}
 		else
 		{
-			// If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
-			if ($cur_user['logged'] < ($now-$pun_config['o_timeout_visit']))
-			{
-				$db->query('UPDATE '.$db->prefix.'users SET last_visit='.$cur_user['logged'].', tracked_topics=null WHERE id='.$cur_user['user_id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
-				$db->query('DELETE FROM '.$db->prefix.'online WHERE user_id='.$cur_user['user_id']) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
-			}
-			else if ($cur_user['idle'] == '0')
-				$db->query('UPDATE '.$db->prefix.'online SET idle=1 WHERE user_id='.$cur_user['user_id']) or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+			
+			if ($cur_user['user_id'] == 1)
+				$online_guests[] = $cur_user['ident'];
+			else
+				$online_users[$cur_user['user_id']] = $cur_user['ident'];
+
 		}
+	}
+	
+	if (!$pun_user['is_bot'])
+	{
+		if ($pun_user['is_guest'])
+			$db->query('UPDATE '.$db->prefix.'online SET currently = \''.$db->escape($cur_position).'\' WHERE ident=\''.$db->escape(get_remote_address()).'\'') or error('Unable to update user position in the online list1', __FILE__, __LINE__, $db->error());
+		else	
+			$db->query('UPDATE '.$db->prefix.'online SET currently= \''.$db->escape($cur_position).'\' WHERE user_id='.$pun_user['id']) or error('Unable to update user position in the online list2', __FILE__, __LINE__, $db->error());
 	}
 }
 
@@ -2189,4 +2215,232 @@ function dump()
 
 	echo '</pre>';
 	exit;
+}
+
+
+function generate_user_location($url)
+{
+	global $db, $pun_user, $lang_online;
+
+	if(file_exists(FORUM_CACHE_DIR.'cache_perms.php'))
+		require FORUM_CACHE_DIR.'cache_perms.php';
+	else
+	{
+		require 'cache.php';
+		generate_perms_cache();
+		require FORUM_CACHE_DIR.'cache_perms.php';
+	}
+
+	switch ($url)
+	{
+		case null:
+			$location = $lang_online['bot'];
+		break;
+		case 'index.php':
+			$location = $lang_online['viewing index'];
+		break;
+		case stristr($url, 'userlist.php'):	
+			$location = $lang_online['viewing userlist'];
+		break;
+		case 'online.php':
+			$location = $lang_online['viewing online'];
+		break;
+		case 'misc.php?action=rules':
+			$location = $lang_online['viewing rules'];
+		break;
+		case stristr($url, 'search'):
+			$location = $lang_online['searching'];
+		break;
+		case stristr($url, 'help'):	
+			$location = $lang_online['bbcode help'];
+		break;
+		case stristr($url, 'profile'):
+			$id = filter_var($url, FILTER_SANITIZE_NUMBER_INT);
+			$result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE id = \''.$db->escape($id).'\'', true) or error('Unable to get user\'s current location from profile.php', __FILE__, __LINE__, $db->error());
+
+			$username = '<a href="profile.php?id='.$id.'">'.pun_htmlspecialchars($db->result($result)).'</a>';
+			$location = sprintf($lang_online['viewing profile'], $username);
+		break;
+		case stristr($url, 'pms_'):
+			$location = $lang_online['private messaging'];
+		break;
+		case stristr($url, 'admin'):
+			$location = $lang_online['administration'];
+		break;
+		case stristr($url, 'login'):	
+			$location = $lang_online['login'];
+		break;
+		case stristr($url, 'viewforum.php'):
+
+			if (strpos($url, '&p=')!== false)
+			{
+				preg_match('~&p=(.*)~', $url, $replace);
+				$url = str_replace($replace[0], '', $url);
+			}
+			$id = filter_var($url, FILTER_SANITIZE_NUMBER_INT);
+			$result = $db->query('SELECT forum_name FROM '.$db->prefix.'forums WHERE id = \''.$db->escape($id).'\'', true) or error('Unable to get user\'s current location from viewforum.php', __FILE__, __LINE__, $db->error());
+
+			if (!isset($perms[$pun_user['g_id'].'_'.$id]))
+				$perms[$pun_user['g_id'].'_'.$id] = $perms['_'];
+			
+			if ($perms[$pun_user['g_id'].'_'.$id]['read_forum'] == '1' || is_null($perms[$pun_user['g_id'].'_'.$id]['read_forum']))
+			{
+				$forum = '<a href="viewforum.php?id='.$id.'">'.pun_htmlspecialchars($db->result($result)).'</a>';
+				$location = sprintf($lang_online['viewing forum'], $forum);
+			}
+			else
+				$location = $lang_online['in hidden forum'];
+		break;
+		case stristr($url, 'viewtopic.php?pid'):
+			//Now for the nasty part =)
+			$pid = filter_var($url, FILTER_SANITIZE_NUMBER_INT);
+		
+			$result = $db->query('SELECT t.subject, t.forum_id AS fid FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON p.topic_id = t.id WHERE p.id = \''.$db->escape($pid).'\'', true) or error('Unable to get user\'s current location from viewtopic.php', __FILE__, __LINE__, $db->error());
+			$info = $db->fetch_assoc($result);
+			
+			if (!isset($perms[$pun_user['g_id'].'_'.$info['fid']]))
+				$perms[$pun_user['g_id'].'_'.$info['fid']] = $perms['_'];
+			
+			if ($perms[$pun_user['g_id'].'_'.$info['fid']]['read_forum'] == '1' || is_null($perms[$pun_user['g_id'].'_'.$info['fid']]['read_forum']))
+			{
+				$topic = '<a href="viewtopic.php?pid='.$pid.'#p'.$pid.'">'.pun_htmlspecialchars($info['subject']).'</a>';
+				$location = sprintf($lang_online['viewing topic'], $topic);
+			}
+			else
+				$location = $lang_online['in hidden forum'];
+		break;
+		case stristr($url, 'viewtopic.php?id'):	
+		
+			if (strpos($url, '&p=')!== false)
+			{
+				preg_match('~&p=(.*)~', $url, $replace);
+				$url = str_replace($replace[0], '', $url);
+			}
+			$id = filter_var($url, FILTER_SANITIZE_NUMBER_INT);
+			$result = $db->query('SELECT subject, forum_id AS fid FROM '.$db->prefix.'topics WHERE id = \''.$db->escape($id).'\'', true) or error('Unable to get user\'s current location from viewtopic.php', __FILE__, __LINE__, $db->error());
+			$info = $db->fetch_assoc($result);
+
+			if (!isset($perms[$pun_user['g_id'].'_'.$info['fid']]))
+				$perms[$pun_user['g_id'].'_'.$info['fid']] = $perms['_'];
+			
+			if ($perms[$pun_user['g_id'].'_'.$info['fid']]['read_forum'] == '1' || is_null($perms[$pun_user['g_id'].'_'.$info['fid']]['read_forum']))
+			{			
+				$topic = '<a href="viewtopic.php?id='.$id.'">'.pun_htmlspecialchars($info['subject']).'</a>';
+				$location = sprintf($lang_online['viewing topic'], $topic);
+			}
+			else
+				$location = $lang_online['in hidden forum'];
+		break;
+		case stristr($url, 'post.php?action=post'):
+			$location = $lang_online['posting'];
+		break;
+		case stristr($url, 'post.php?fid'):	
+			$fid = filter_var($url, FILTER_SANITIZE_NUMBER_INT);
+			$result = $db->query('SELECT forum_name FROM '.$db->prefix.'forums WHERE id = \''.$db->escape($fid).'\'', true) or error('Unable to get user\'s current location from post.php', __FILE__, __LINE__, $db->error());
+
+			if (!isset($perms[$pun_user['g_id'].'_'.$fid]))
+				$perms[$pun_user['g_id'].'_'.$fid] = $perms['_'];
+			
+			if ($perms[$pun_user['g_id'].'_'.$fid]['read_forum'] == '1' || is_null($perms[$pun_user['g_id'].'_'.$fid]['read_forum']))
+			{			
+				$forum = '<a href="viewforum.php?id='.$fid.'">'.pun_htmlspecialchars($db->result($result)).'</a>';
+				$location = sprintf($lang_online['posting topic'], $forum);
+			}
+			else
+				$location = $lang_online['in hidden forum'];
+		break;
+		case stristr($url, 'post.php?tid'):
+	
+			$tid = filter_var($url, FILTER_SANITIZE_NUMBER_INT);
+			$result = $db->query('SELECT subject, forum_id AS fid FROM '.$db->prefix.'topics WHERE id = \''.$db->escape($tid).'\'', true) or error('Unable to get user\'s current location from post.php', __FILE__, __LINE__, $db->error());
+			$info = $db->fetch_assoc($result);	
+
+			if (!isset($perms[$pun_user['g_id'].'_'.$info['fid']]))
+				$perms[$pun_user['g_id'].'_'.$info['fid']] = $perms['_'];
+			
+			if ($perms[$pun_user['g_id'].'_'.$info['fid']]['read_forum'] == '1' || is_null($perms[$pun_user['g_id'].'_'.$info['fid']]['read_forum']))
+			{			
+				$topic = '<a href="viewtopic.php?id='.$tid.'">'.pun_htmlspecialchars($info['subject']).'</a>';
+				$location = sprintf($lang_online['replying to topic'], $topic);
+			}
+			else
+				$location = $lang_online['in hidden forum'];
+		break;
+		case stristr($url, 'edit.php?id'):
+		
+			$id = filter_var($url, FILTER_SANITIZE_NUMBER_INT);
+		
+			$result = $db->query('SELECT t.subject, t.forum_id AS fid FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON p.topic_id = t.id WHERE p.id = \''.$db->escape($id).'\'', true) or error('Unable to get user\'s current location from post.php', __FILE__, __LINE__, $db->error());
+			$info = $db->fetch_assoc($result);
+
+			if (!isset($perms[$pun_user['g_id'].'_'.$info['fid']]))
+				$perms[$pun_user['g_id'].'_'.$info['fid']] = $perms['_'];
+			
+			if ($perms[$pun_user['g_id'].'_'.$info['fid']]['read_forum'] == '1' || is_null($perms[$pun_user['g_id'].'_'.$info['fid']]['read_forum']))
+			{
+				$topic = '<a href="viewtopic.php?pid='.$id.'#p'.$id.'">'.pun_htmlspecialchars($info['subject']).'</a>';
+				$location = sprintf($lang_online['editing topic'], $topic);
+			}
+			else
+				$location = $lang_online['in hidden forum'];
+		break;
+		case stristr($url, 'delete.php?id'):
+
+			$id = filter_var($url, FILTER_SANITIZE_NUMBER_INT);
+			$result = $db->query('SELECT t.subject, t.forum_id AS fid FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON p.topic_id = t.id WHERE p.id = \''.$db->escape($id).'\'', true) or error('Unable to get user\'s current location from delete.php', __FILE__, __LINE__, $db->error());
+			$info = $db->fetch_assoc($result);
+
+			if (!isset($perms[$pun_user['g_id'].'_'.$info['fid']]))
+				$perms[$pun_user['g_id'].'_'.$info['fid']] = $perms['_'];
+			
+			if ($perms[$pun_user['g_id'].'_'.$info['fid']]['read_forum'] == '1' || is_null($perms[$pun_user['g_id'].'_'.$info['fid']]['read_forum']))
+			{
+				$post = '<a href="viewtopic.php?pid='.$id.'#p'.$id.'">'.pun_htmlspecialchars($info['subject']).'</a>'; 
+				$location = sprintf($lang_online['deleting post'], $post);
+			}
+			else
+				$location = $lang_online['in hidden forum'];
+		break;
+		case stristr($url, 'moderate.php'):
+			$location = $lang_online['moderating'];
+		break;
+		case stristr($url, 'register.php'):	
+			$location = $lang_online['register'];
+		break;
+		case stristr($url, 'misc.php?action=leaders'):
+			$location = $lang_online['viewing team'];
+		break;
+		case '-':
+			$lang_online['not online'];
+		break;
+		default:
+			$location = $url;
+		break;
+	}
+	return $location;
+}
+
+function format_time_difference($logged, $lang_online)
+{
+	$difference = time() - $logged;
+     
+	$intervals = array('minute'=> 60); 
+
+	if ($difference < 60)
+	{
+		if ($difference == '1')
+			$difference = sprintf($difference, $lang_online['second ago']);
+		else
+			$difference = sprintf($difference, $lang_online['seconds ago']);
+	}        
+
+	if ($difference >= 60)
+	{
+		$difference = floor($difference/$intervals['minute']);
+		if ($difference == '1')
+			$difference = sprintf($difference, $lang_online['minute ago']);
+		else
+			$difference = sprintf($difference, $lang_online['minutes ago']);
+	}  
+	return $difference;
 }

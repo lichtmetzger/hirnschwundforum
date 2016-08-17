@@ -1094,8 +1094,28 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 {
 	$user_personal = array();
 
+	if ($pun_config['o_users_online'] == '1')
+	{
+		require PUN_ROOT.'lang/'.$pun_user['language'].'/online.php';
+		$result = $db->query('SELECT currently FROM '.$db->prefix.'online WHERE user_id = '.$id.'', true);
+		$online = $db->fetch_assoc($result);
+	
+		if ($online['currently'] == NULL || $online['currently'] == '')
+		{
+			$icon = 'status_offline';
+			$status = $lang_online['user is offline'];
+			$location = $lang_online['not online'];
+		}
+		else
+		{
+			$icon = 'status_online';
+			$status = $lang_online['user is online'];
+			$location = generate_user_location($online['currently']);
+		}
+	}
+
 	$user_personal[] = '<dt>'.$lang_common['Username'].'</dt>';
-	$user_personal[] = '<dd>'.pun_htmlspecialchars($user['username']).'</dd>';
+	$user_personal[] = '<dd><img src="img/'.$icon.'.png" title="'.$status.'" />'.pun_htmlspecialchars($user['username']).'</dd>';
 
 	$user_title_field = get_title($user);
 	$user_personal[] = '<dt>'.$lang_common['Title'].'</dt>';
@@ -1134,6 +1154,9 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 		$user_personal[] = '<dt>'.$lang_common['Email'].'</dt>';
 		$user_personal[] = '<dd><span class="email">'.$email_field.'</span></dd>';
 	}
+
+	$user_personal[] = '<dt>'.$lang_online['currently'].'</dt>';
+	$user_personal[] = '<dd>'.$location.'</dd>';
 
 // New PMS
 	if (!$pun_user['is_guest'] && $pun_config['o_pms_enabled'] == '1' && $pun_user['g_pm'] == 1 && $pun_user['messages_enable'] == 1)

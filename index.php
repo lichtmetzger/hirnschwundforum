@@ -242,32 +242,44 @@ if (!empty($forum_actions))
 if ($pun_config['o_users_online'] == '1')
 {
 	// Fetch users online info and generate strings for output
-	$num_guests = 0;
-	$users = array();
-	$result = $db->query('SELECT user_id, ident FROM '.$db->prefix.'online WHERE idle=0 ORDER BY ident', true) or error('Unable to fetch online list', __FILE__, __LINE__, $db->error());
-
-	while ($pun_user_online = $db->fetch_assoc($result))
+	$num_guests = count($online_guests); 
+	$num_bots = 0;
+	$num_users = count($online_users);
+	$users = $bots = $bots_online = array();
+	
+	foreach ($online_users as $online_id => $online_name)
 	{
-		if ($pun_user_online['user_id'] > 1)
-		{
-			if ($pun_user['g_view_users'] == '1')
-				$users[] = "\n\t\t\t\t".'<dd><a href="profile.php?id='.$pun_user_online['user_id'].'">'.pun_htmlspecialchars($pun_user_online['ident']).'</a>';
-			else
-				$users[] = "\n\t\t\t\t".'<dd>'.pun_htmlspecialchars($pun_user_online['ident']);
-		}
+	
+		if ($pun_user['g_view_users'] == '1')
+			$users[] = "\n\t\t\t\t".'<dd><a href="profile.php?id='.$online_id.'">'.pun_htmlspecialchars($online_name).'</a>';
 		else
-			++$num_guests;
+			$users[] = "\n\t\t\t\t".'<dd>'.pun_htmlspecialchars($online_name);
 	}
+	foreach ($online_guests as $online_name)
+	{
+		if (strpos($online_name, '[Bot]') !== false)
+		{
+		   ++$num_bots;
+		   $arr_o_name = explode('[Bot]', $online_name);
+		   if (empty($bots[$arr_o_name[1]])) $bots[$arr_o_name[1]] = 1;
+		   else ++$bots[$arr_o_name[1]];
+		}
+	}
+	foreach ($bots as $online_name => $online_id)
+		   $bots_online[] = "\n\t\t\t\t".pun_htmlspecialchars($online_name.' [Bot]'.($online_id > 1 ? ' ('.$online_id.')' : ''));
 
-	$num_users = count($users);
-	echo "\t\t\t\t".'<dd><span>'.sprintf($lang_index['Users online'], '<strong>'.forum_number_format($num_users).'</strong>').'</span></dd>'."\n\t\t\t\t".'<dd><span>'.sprintf($lang_index['Guests online'], '<strong>'.forum_number_format($num_guests).'</strong>').'</span></dd>'."\n\t\t\t".'</dl>'."\n";
-
-
+	$num_guests = $num_guests - $num_bots;
+	
+	echo "\t\t\t\t".'<dd><span>'.sprintf($lang_index['Users online'], '<strong>'.forum_number_format($num_users).'</strong>').'</span></dd>'."\n\t\t\t\t".'<dd><span>'.sprintf($lang_index['Guests online'], '<strong>'.forum_number_format($num_guests).'</strong>').'</span></dd>'."\n\t\t\t\t".'<dd><span>'.sprintf($lang_index['Bots online 1'], '<strong>'.forum_number_format($num_bots).'</strong>').'</span></dd>'."\n\t\t\t".'</dl>'."\n";
+	
 	if ($num_users > 0)
-		echo "\t\t\t".'<dl id="onlinelist" class="clearb">'."\n\t\t\t\t".'<dt><strong>'.$lang_index['Online'].' </strong></dt>'."\t\t\t\t".implode(',</dd> ', $users).'</dd>'."\n\t\t\t".'</dl>'."\n";
-	else
-		echo "\t\t\t".'<div class="clearer"></div>'."\n";
+       		echo "\t\t\t".'<dl id="onlinelist" class="clearb">'."\n\t\t\t\t".'<dt><strong>'.$lang_index['Online'].' </strong></dt>'."\t\t\t\t".implode(',</dd> ', $users).'</dd>'."\n\t\t\t".'</dl>'."\n";
 
+	if ($num_bots > 0)
+		echo "\t\t\t".'<dl id="onlinelist" class="clearb">'."\n\t\t\t\t".'<dt><strong>'.$lang_index['Bots Online'].' </strong></dt>'."\t\t\t\t".implode(',</dd> ', $bots_online).'</dd>'."\n\t\t\t".'</dl>'."\n";
+    	
+    if ($num_bots + $num_users == 0)
+		echo "\t\t\t".'<div class="clearer"></div>'."\n";
 }
 else
 	echo "\t\t\t".'</dl>'."\n\t\t\t".'<div class="clearer"></div>'."\n";

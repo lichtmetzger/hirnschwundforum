@@ -37,6 +37,7 @@ if (isset($_POST['add_forum']))
 		require PUN_ROOT.'include/cache.php';
 
 	generate_quickjump_cache();
+	generate_perms_cache();
 
 	redirect('admin_forums.php?edit_forum='.$new_fid, $lang_admin_forums['Forum added redirect']);
 }
@@ -81,6 +82,7 @@ else if (isset($_GET['del_forum']))
 			require PUN_ROOT.'include/cache.php';
 
 		generate_quickjump_cache();
+		generate_perms_cache();
 
 		redirect('admin_forums.php', $lang_admin_forums['Forum deleted redirect']);
 	}
@@ -140,6 +142,7 @@ else if (isset($_POST['update_positions']))
 		require PUN_ROOT.'include/cache.php';
 
 	generate_quickjump_cache();
+	generate_perms_cache();
 
 	redirect('admin_forums.php', $lang_admin_forums['Forums updated redirect']);
 }
@@ -205,6 +208,7 @@ else if (isset($_GET['edit_forum']))
 			require PUN_ROOT.'include/cache.php';
 
 		generate_quickjump_cache();
+		generate_perms_cache();
 
 		redirect('admin_forums.php', $lang_admin_forums['Forum updated redirect']);
 	}
@@ -219,6 +223,7 @@ else if (isset($_GET['edit_forum']))
 			require PUN_ROOT.'include/cache.php';
 
 		generate_quickjump_cache();
+		generate_perms_cache();
 
 		redirect('admin_forums.php?edit_forum='.$forum_id, $lang_admin_forums['Perms reverted redirect']);
 	}

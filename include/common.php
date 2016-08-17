@@ -186,6 +186,21 @@ if (!defined('PUN_BANS_LOADED'))
 check_bans();
 
 // Update online list
+
+$online_users = $online_guests = array();
+$cur_position = substr($_SERVER['REQUEST_URI'], 1);
+
+$server_base = dirname($_SERVER['PHP_SELF']);
+
+if ($server_base !== '/')
+{ 
+	$directories = strlen($server_base);
+	$cur_position = substr($cur_position, $directories);
+}
+
+if ($cur_position == '') 
+	$cur_position = 'index.php';
+
 update_users_online();
 
 // Check to see if we logged in without a cookie being set

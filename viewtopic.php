@@ -9,6 +9,8 @@
 define('PUN_ROOT', dirname(__FILE__).'/');
 require PUN_ROOT.'include/common.php';
 
+require PUN_ROOT.'lang/'.$pun_user['language'].'/online.php';
+
 
 if ($pun_user['g_read_board'] == '0')
 	message($lang_common['No view'], false, '403 Forbidden');
@@ -439,6 +441,93 @@ while ($cur_post = $db->fetch_assoc($result))
 		<div class="clearer"></div>
 	</div>
 </div>
+
+<?php
+if ($pun_config['o_users_online'] == '1')
+{
+	$guests_in_topic = $users = array();
+
+	$online = $db->query("SELECT user_id, ident, currently, logged FROM ".$db->prefix."online WHERE currently LIKE '%viewtopic.php%' AND idle = 0", true) or error('Unable to get current location from viewtopic.php', __FILE__, __LINE__, $db->error());
+	while ($user_online = $db->fetch_assoc($online))
+	{
+		if (strpos($user_online['currently'], '&p=')!== false)
+		{
+			preg_match('~&p=(.*)~', $user_online['currently'], $replace);
+			$user_online['currently'] = str_replace($replace[0], '', $user_online['currently']);
+		}
+		$tid = filter_var($user_online['currently'], FILTER_SANITIZE_NUMBER_INT);
+	
+
+		if (strpos($user_online['currently'], '?pid') !== false)
+		{
+			if (in_array($tid, $post_ids))
+			{
+				if ($user_online['user_id'] == 1)
+					$guests_in_topic[] = $user_online['ident'];
+				else
+				{
+
+						if ($pun_user['g_view_users'] == 0)
+							$member = pun_htmlspecialchars($user_online['ident']);
+						else
+						{
+							$time = format_time($user_online['logged']);
+							$reading = sprintf($lang_online['reading'], $time);
+
+							$member = '<a href="profile.php?id='.$user_online['user_id'].'" title="'.$reading.'">'.pun_htmlspecialchars($user_online['ident']).'</a>';
+
+						}
+
+					$users[] = $member;
+				}
+			}
+		}
+		elseif (strpos($user_online['currently'], '?id') !== false)
+		{
+			if ($tid == $id)
+			{
+				if ($user_online['user_id'] == 1)
+					$guests_in_topic[] = $user_online['ident'];
+				else
+				{
+
+					if ($pun_user['g_view_users'] == 0)
+						$member = pun_htmlspecialchars($user_online['ident']);
+					else
+					{
+						$time = format_time($user_online['logged']);
+						$reading = sprintf($lang_online['reading'], $time);
+
+						$member = '<a href="profile.php?id='.$user_online['user_id'].'" title="'.$reading.'">'.pun_htmlspecialchars($user_online['ident']).'</a>';
+					}
+					$users[] = $member;
+				}
+			}
+		}
+			 
+	}
+	$num_guests = count($guests_in_topic);
+	$num_users = count($users);
+?>
+<div id="brdstats" class="block">
+	<div class="box">
+		<div class="inbox">
+			
+<?php
+	if ($num_users > 0)
+		$users = implode(', ', $users);
+	else
+		$users = $lang_online['no users'];
+
+		echo "\t\t\t".'<dl id="onlinelist" class="clearb">'.sprintf($lang_online['online topic'], $num_guests, $users)."\n";
+?>			
+			
+		</div>
+	</div>
+</div>
+<?php 
+}
+?>
 
 <?php
 

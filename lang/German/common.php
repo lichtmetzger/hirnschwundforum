@@ -174,4 +174,6 @@ $lang_common = array(
 
 'Hidden text' => 'Spoiler!',
 
+'Online'							=>	'Online',
+
 );

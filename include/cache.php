@@ -260,4 +260,38 @@ function fluxbb_invalidate_cached_file($file)
 }
 
 
+//
+// Generate forum permissions cache script
+//
+
+function generate_perms_cache()
+{
+	global $db, $lang_common, $pun_user;
+
+	$groups = array();
+
+	$fh = @fopen(FORUM_CACHE_DIR.'cache_perms.php', 'wb');
+	if (!$fh)
+		error('Unable to write forum permissions cache files to cache directory. Please make sure PHP has write access to the directory \''.pun_htmlspecialchars(FORUM_CACHE_DIR).'\'', __FILE__, __LINE__);
+
+	$output = '<?php'."\n\n".'if (!defined(\'PUN\')) exit;'."\n\n".'define(\'PUN_FP_LOADED\', 1);'."\n"."\n\n".'$perms = array();'."\n\n";
+
+	// A group_id was not supplied, so we generate the permission cache for all groups
+	$result = $db->query('SELECT g.g_read_board, fp.group_id AS id, fp.forum_id, fp.read_forum, fp.post_replies, fp.post_topics FROM '.$db->prefix.'groups AS g LEFT JOIN '.$db->prefix.'forum_perms AS fp ON g.g_id = fp.group_id ORDER BY fp.group_id ASC') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+	while ($group = $db->fetch_assoc($result))
+	{
+		$groups = array('read_board' => $group['g_read_board'], 'forum_id' => $group['forum_id'], 'read_forum' => $group['read_forum'], 'post_replies' => $group['post_replies'], 'post_topics' => $group['post_topics']);
+
+		$output .= '$perms[\''.$group['id'].'_'.$group['forum_id'].'\'] = '.var_export($groups, true).';'."\n\n";
+	}
+
+	fwrite($fh, $output);
+
+	fclose($fh);
+
+	if (function_exists('apc_delete_file'))
+		@apc_delete_file(FORUM_CACHE_DIR.'cache_perms.php');
+
+}
+
 define('FORUM_CACHE_FUNCTIONS_LOADED', true);
