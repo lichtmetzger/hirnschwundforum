@@ -96,7 +96,7 @@ $lang_common = array(
 // Links, die sich in der Navigation befinden (oben auf jeder Seite)
 'Index'								=>	'Übersicht',
 'User list'							=>	'Mitglieder',
-'Rules'								=>	'Nutzungsbedingungen',
+'Rules'								=>	'Regeln',
 'Search'							=>	'Suche',
 'Register'							=>	'Registrieren',
 'Login'								=>	'Anmelden',
