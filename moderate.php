@@ -188,7 +188,7 @@ if (isset($_GET['tid']))
 				// Otherwise faulty form input was supplied so show error
 				else
 				{
-					message('To move posts to an existing topic, please enter either the destination topic\'s ID or a link to the topic\'s page.');
+					message('Um Beiträge in ein bereits existierendes Thema zu verschieben, gib entweder die Themen-ID oder den Link zum Thema an.');
 				}
 				// Make sure the specified topic exists and gets its num of replies and source forum
 				$destination_topic_id = intval($destination_topic_id);
@@ -283,8 +283,8 @@ if (isset($_GET['tid']))
 						<?php 
 						// MOD Move Posts: Added destination_topic field and corresponding UI text, and removed 'required' attribute from new_subject field
 						?>
-						<label>Destination topic (topic ID or topic URL) <br /><input type="text" name="destination_topic" size="80" maxlength="256" /><br /></label>
-						<p>Or to move the posts to an entirely new topic, enter the new topic title and select its destination forum below.</p>
+						<label>Zielthema (Themen-ID or Link zum Thema) <br /><input type="text" name="destination_topic" size="80" maxlength="256" /><br /></label>
+						<p><b>Oder</b>: Um die Beiträge in ein komplett neues Thema zu verschieben, gib unten einen neuen Titel und das Zielforum an.</p>
 						<label><?php echo $lang_misc['New subject'] ?> <br /><input type="text" name="new_subject" size="80" maxlength="70" /><br /></label>
 						<?php // MOD Move Posts: End of mod's form field edits ?>
 						<label><?php echo $lang_misc['Move to'] ?>
@@ -454,7 +454,9 @@ if (isset($_GET['tid']))
 	<div class="inbox crumbsplus">
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
-			<p class="conr modbuttons"><input type="submit" name="split_posts" value="<?php echo $lang_misc['Split'] ?>"<?php echo $button_status ?> /> <input type="submit" name="delete_posts" value="<?php echo $lang_misc['Delete'] ?>"<?php echo $button_status ?> /></p>
+			<p class="conr modbuttons"><input type="submit" name="split_posts" value="<?php echo $lang_misc['Split'] ?>"<?php echo $button_status ?> />
+			<!--MOD: Do not display delete button-->
+			<!--<input type="submit" name="delete_posts" value="--><?php //echo $lang_misc['Delete'] ?><!--"--><?php echo $button_status ?> <!--/>--></p>
 			<div class="clearer"></div>
 		</div>
 		<ul class="crumbs">
@@ -1069,7 +1071,7 @@ else
 	<div class="inbox crumbsplus">
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
-			<p class="conr modbuttons"><input type="submit" name="move_topics" value="<?php echo $lang_misc['Move'] ?>"<?php echo $button_status ?> /> <input type="submit" name="delete_topics" value="<?php echo $lang_misc['Delete'] ?>"<?php echo $button_status ?> /> <input type="submit" name="merge_topics" value="<?php echo $lang_misc['Merge'] ?>"<?php echo $button_status ?> /> <input type="submit" name="open" value="<?php echo $lang_misc['Open'] ?>"<?php echo $button_status ?> /> <input type="submit" name="close" value="<?php echo $lang_misc['Close'] ?>"<?php echo $button_status ?> /></p>
+			<p class="conr modbuttons"><input type="submit" name="move_topics" value="<?php echo $lang_misc['Move']."/".$lang_misc['Delete'] ?>"<?php echo $button_status ?> /> <!--MOD: Do not show delete button <input type="submit" name="delete_topics" value="--><?php //echo $lang_misc['Delete'] ?><!--"--><?php echo $button_status ?> <!--/>--> <input type="submit" name="merge_topics" value="<?php echo $lang_misc['Merge'] ?>"<?php echo $button_status ?> /> <input type="submit" name="open" value="<?php echo $lang_misc['Open'] ?>"<?php echo $button_status ?> /> <input type="submit" name="close" value="<?php echo $lang_misc['Close'] ?>"<?php echo $button_status ?> /></p>
 			<div class="clearer"></div>
 		</div>
 		<ul class="crumbs">

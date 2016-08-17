@@ -734,9 +734,9 @@ function delete_topic($topic_id)
 	global $db, $pun_user, $pun_config;
 
 	// Verify that the move to forum ID is valid
-	$result = $db->query('SELECT 1 FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.group_id='.$pun_user['g_id'].' AND fp.forum_id='.$pun_config['o_softdelete_forum'].') WHERE f.redirect_url IS NULL AND (fp.post_topics IS NULL OR fp.post_topics=1)') or error('Unable to fetch forum permissions', __FILE__, __LINE__, $db->error());
-	if (!$db->num_rows($result))
-		message($lang_common['Bad request']);
+	//$result = $db->query('SELECT 1 FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.group_id='.$pun_user['g_id'].' AND fp.forum_id='.$pun_config['o_softdelete_forum'].') WHERE f.redirect_url IS NULL AND (fp.post_topics IS NULL OR fp.post_topics=1)') or error('Unable to fetch forum permissions', __FILE__, __LINE__, $db->error());
+	//if (!$db->num_rows($result))
+		//message($lang_common['Bad request']);
 
 	$result = $db->query('SELECT forum_id FROM '.$db->prefix.'topics WHERE id='.$topic_id) or error('Unable to fetch topic information');
 	$topic = $db->fetch_assoc($result);
@@ -750,9 +750,9 @@ function delete_topic($topic_id)
 
 			update_forum($topic['forum_id']);
 			update_forum($pun_config['o_softdelete_forum']);
-		} else if ($pun_user['g_id'] == PUN_ADMIN) {
+		} /*else if ($pun_user['g_id'] == PUN_ADMIN) {
 			hard_delete_topic($topic_id);
-		}
+		}*/
 	} else {
 		hard_delete_topic($topic_id);
 	}
@@ -799,9 +799,9 @@ function delete_post($post_id, $topic_id)
 	global $db, $pun_user, $pun_config;
 
 	// Verify that the move to forum ID is valid
-	$result = $db->query('SELECT 1 FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.group_id='.$pun_user['g_id'].' AND fp.forum_id='.$pun_config['o_softdelete_forum'].') WHERE f.redirect_url IS NULL AND (fp.post_topics IS NULL OR fp.post_topics=1)') or error('Unable to fetch forum permissions', __FILE__, __LINE__, $db->error());
-	if (!$db->num_rows($result))
-		message($lang_common['Bad request']);
+	//$result = $db->query('SELECT 1 FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.group_id='.$pun_user['g_id'].' AND fp.forum_id='.$pun_config['o_softdelete_forum'].') WHERE f.redirect_url IS NULL AND (fp.post_topics IS NULL OR fp.post_topics=1)') or error('Unable to fetch forum permissions', __FILE__, __LINE__, $db->error());
+	//if (!$db->num_rows($result))
+		//message($lang_common['Bad request']);
 
 	$result = $db->query('SELECT p.id, p.poster, p.posted, t.forum_id AS forum_id FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON p.topic_id = t.id WHERE p.id='.$post_id) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 	$post = $db->fetch_assoc($result);
@@ -827,9 +827,9 @@ function delete_post($post_id, $topic_id)
 
 			update_forum($post['forum_id']);
 			update_forum($pun_config['o_softdelete_forum']);
-		} else if ($pun_user['g_id'] == PUN_ADMIN) {
+		} /*else if ($pun_user['g_id'] == PUN_ADMIN) {
 			hard_delete_post($post_id, $topic_id);
-		}
+		}*/
 	} else {
 		hard_delete_post($post_id, $topic_id);
 	}
