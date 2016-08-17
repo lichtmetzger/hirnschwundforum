@@ -144,7 +144,7 @@ if ($poll_question)
 ?>
 							<tr>
 								<td style="border: 0;"><?php echo pun_htmlspecialchars($value); ?></td>
-								<td style="border: 0; width: 40%; padding-left: 6px; padding-right: 6px;"><h2 style="width: <?php if (isset($votes[$key]) && $percent_int != 0) echo ($percent_int).'%'; else echo "1%"; ?>; font-size: 1px; height: 2px; margin-bottom: 3px; PADDING-LEFT: 0px;PADDING-RIGHT: 0px; border-style: solid; border-width: 1px;"></h2></td>
+								<td style="border: 0; width: 40%; padding-left: 6px; padding-right: 6px;"><h2 style="border-color:#F09130;width: <?php if (isset($votes[$key]) && $percent_int != 0) echo ($percent_int).'%'; else echo "1%"; ?>; font-size: 1px; height: 2px; margin-bottom: 3px; PADDING-LEFT: 0px;PADDING-RIGHT: 0px; border-style: solid; border-width: 1px;"></h2></td>
 								<td style="border: 0;"><?php if (isset($votes[$key])) echo $percent_int . "% (" . $votes[$key].')'; else echo "0% (0)"; ?></td>
 							</tr>
 <?php
