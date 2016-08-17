@@ -204,7 +204,9 @@ if (!defined('PUN_USERS_INFO_LOADED'))
 	require FORUM_CACHE_DIR.'cache_users_info.php';
 }
 
-$result = $db->query('SELECT SUM(num_topics), SUM(num_posts) FROM '.$db->prefix.'forums') or error('Unable to fetch topic/post count', __FILE__, __LINE__, $db->error());
+//$result = $db->query('SELECT SUM(num_topics), SUM(num_posts) FROM '.$db->prefix.'forums') or error('Unable to fetch topic/post count', __FILE__, __LINE__, $db->error());
+//hide forum id 5 (mod), 8 (trashcan), 9 (move)
+$result = $db->query('SELECT SUM(num_topics), SUM(num_posts) FROM '.$db->prefix.'forums WHERE id NOT IN (5,8,9)') or error('Unable to fetch topic/post count', __FILE__, __LINE__, $db->error());
 list($stats['total_topics'], $stats['total_posts']) = array_map('intval', $db->fetch_row($result));
 
 if ($pun_user['g_view_users'] == '1')
