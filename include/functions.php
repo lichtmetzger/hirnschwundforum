@@ -974,6 +974,49 @@ function message($message, $no_back_link = false, $http_status = null)
 
 
 //
+// Adapted from osm's time2str function on StackOverflow
+//
+function time2str($ts)
+{
+  global $pun_user;
+    if(!ctype_digit($ts))
+        $ts = strtotime($ts);
+    if(is_null($date_format))
+    	$date_format = $forum_date_formats[$pun_user['date_format']];
+
+    $offset = ($pun_user['timezone'] + $pun_user['dst']) * 3600;
+    $ts -= $offset;
+    $diff = time() - $ts;
+
+    if($diff == 0)
+        return 'now';
+    elseif($diff > 0)
+    {
+        $day_diff = floor($diff / 86400);
+        if($day_diff == 0)
+        {
+            if($diff < 60) return 'just now';
+            if($diff < 120) return '1 minute ago';
+            if($diff < 3600) return floor($diff / 60) . ' minutes ago';
+            if($diff < 7200) return '1 hour ago';
+            if($diff < 86400) return floor($diff / 3600) . ' hours ago';
+        }
+        if($day_diff == 1) return 'Yesterday';
+        if($day_diff < 7) return $day_diff . ' days ago';
+        if($day_diff < 31) return ceil($day_diff / 7) . ' weeks ago';
+        if($day_diff < 60) return 'last month';
+        if(date('Y') == date('Y', $ts)){
+          return date('F j', $ts); //add time!
+        } else {
+          return date('F j Y', $ts);
+        }
+      } else {
+        return $pun_user['timezone'];
+      }
+}
+
+
+//
 // Format a time string according to $time_format and time zones
 //
 function format_time($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
@@ -1010,7 +1053,8 @@ function format_time($timestamp, $date_only = false, $date_format = null, $time_
 	else if ($time_only)
 		return gmdate($time_format, $timestamp);
 	else
-		return $date.' '.gmdate($time_format, $timestamp);
+		//return $date.' '.gmdate($time_format, $timestamp);
+		return time2str($timestamp);
 }
 
 
