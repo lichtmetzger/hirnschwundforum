@@ -149,7 +149,9 @@ while ($cur_forum = $db->fetch_assoc($result))
 	else
 		$last_post = $lang_common['Never'];
 
-	if ($cur_forum['moderators'] != '')
+// Don't show mods on every subforum
+// 	if ($cur_forum['moderators'] != '')
+	if (0)
 	{
 		$mods_array = unserialize($cur_forum['moderators']);
 		$moderators = array();
