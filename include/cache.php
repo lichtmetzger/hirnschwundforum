@@ -177,11 +177,21 @@ function generate_users_info_cache()
 
 	$stats = array();
 
-	$result = $db->query('SELECT COUNT(id)-1 FROM '.$db->prefix.'users WHERE group_id!='.PUN_UNVERIFIED) or error('Unable to fetch total user count', __FILE__, __LINE__, $db->error());
-	$stats['total_users'] = $db->result($result);
+// 	$result = $db->query('SELECT COUNT(id)-1 FROM '.$db->prefix.'users WHERE group_id!='.PUN_UNVERIFIED) or error('Unable to fetch total user count', __FILE__, __LINE__, $db->error());
+// 	$stats['total_users'] = $db->result($result);
+// 
+// 	$result = $db->query('SELECT id, username FROM '.$db->prefix.'users WHERE group_id!='.PUN_UNVERIFIED.' ORDER BY registered DESC LIMIT 1') or error('Unable to fetch newest registered user', __FILE__, __LINE__, $db->error());
+// 	$stats['last_user'] = $db->fetch_assoc($result);
 
-	$result = $db->query('SELECT id, username FROM '.$db->prefix.'users WHERE group_id!='.PUN_UNVERIFIED.' ORDER BY registered DESC LIMIT 1') or error('Unable to fetch newest registered user', __FILE__, __LINE__, $db->error());
-	$stats['last_user'] = $db->fetch_assoc($result);
+// fix above queries by excluding blocked and banned users //schmatzler
+
+ 	$result = $db->query('SELECT COUNT(id)-1 FROM '.$db->prefix.'users WHERE group_id!='.PUN_UNVERIFIED) or error('Unable to fetch total user count', __FILE__, __LINE__, $db->error());
+ 	$result2 = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'bans') or error('Unable to fetch banned user count', __FILE__, __LINE__, $db->error());
+ 	
+ 	$stats['total_users'] = $db->result($result) - $db->result($result2);
+ 
+ 	$result = $db->query('SELECT id, username FROM '.$db->prefix.'users WHERE group_id!='.PUN_UNVERIFIED.' ORDER BY registered DESC LIMIT 1') or error('Unable to fetch newest registered user', __FILE__, __LINE__, $db->error());
+ 	$stats['last_user'] = $db->fetch_assoc($result);
 
 	// Output users info as PHP code
 	$content = '<?php'."\n\n".'define(\'PUN_USERS_INFO_LOADED\', 1);'."\n\n".'$stats = '.var_export($stats, true).';'."\n\n".'?>';
