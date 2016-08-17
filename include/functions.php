@@ -2576,3 +2576,17 @@ function format_time_difference($logged, $lang_online)
 	}  
 	return $difference;
 }
+
+// check for junkmail addresses
+// schmatzler
+function is_temp_mail($mail)
+{
+  $mail_domains_ko = file('https://gist.githubusercontent.com/hassanazimi/d6e49469258d7d06f9f4/raw/disposable_email_addresses');
+  foreach($mail_domains_ko as $ko_mail) {
+    list(, $mail_domain) = explode('@', $mail);
+    if(strcasecmp($mail_domain, trim($ko_mail)) == 0) {
+        return TRUE;
+    }
+  }
+  return FALSE;
+}

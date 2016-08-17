@@ -97,6 +97,14 @@ if (isset($_POST['form_sent']))
 		$errors[] = $lang_prof_reg['Pass too short'];
 	else if ($password1 != $password2)
 		$errors[] = $lang_prof_reg['Pass not match'];
+		
+	//schmatzler
+	//check for junkmail providers
+	//list($user, $domain) = explode('@', $email1);
+	
+	if (is_temp_mail($email1) == TRUE )
+		$errors[] = 'Trashmail-Anbieter sind nicht erlaubt.';
+	//end check
 
 	// Validate email
 	require PUN_ROOT.'include/email.php';
