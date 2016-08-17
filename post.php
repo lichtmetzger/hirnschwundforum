@@ -542,7 +542,9 @@ if ($tid)
 					$q_poster = '\''.$q_poster.'\'';
 			}
 
-			$quote = '[quote='.$q_poster.']'.$q_message.'[/quote]'."\n";
+			//$quote = '[quote='.$q_poster.']'.$q_message.'[/quote]'."\n";
+			//add post id to quoted message -schmatzler
+			$quote = '[quote='.$q_poster.';'.$qid.']'.$q_message.'[/quote]'."\n";
 		}
 		else
 			$quote = '> '.$q_poster.' '.$lang_common['wrote']."\n\n".'> '.$q_message."\n";
@@ -671,7 +673,8 @@ if ($pun_user['is_guest'])
 if ($fid): ?>
 						<label class="required"><strong><?php echo $lang_common['Subject'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input class="longinput" type="text" name="req_subject" value="<?php if (isset($_POST['req_subject'])) echo pun_htmlspecialchars($subject); ?>" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 <?php endif; ?>						<label class="required"><strong><?php echo $lang_common['Message'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
-						<textarea name="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo isset($_POST['req_message']) ? pun_htmlspecialchars($orig_message) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
+<!--Quote Mod: Added textarea id here -schmatzler-->
+						<textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo isset($_POST['req_message']) ? pun_htmlspecialchars($orig_message) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
 						<ul class="bblinks">
 							<li><span><a href="help.php#bbcode" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo ($pun_config['p_message_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 							<li><span><a href="help.php#url" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo ($pun_config['p_message_bbcode'] == '1' && $pun_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
@@ -746,7 +749,8 @@ if ($tid && $pun_config['o_topic_review'] != '0')
 {
 	require_once PUN_ROOT.'include/parser.php';
 
-	$result = $db->query('SELECT poster, message, hide_smilies, posted FROM '.$db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id DESC LIMIT '.$pun_config['o_topic_review']) or error('Unable to fetch topic review', __FILE__, __LINE__, $db->error());
+	//quote button mod - added id here
+	$result = $db->query('SELECT poster, message, hide_smilies, posted, id FROM '.$db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id DESC LIMIT '.$pun_config['o_topic_review']) or error('Unable to fetch topic review', __FILE__, __LINE__, $db->error());
 
 ?>
 
@@ -760,6 +764,16 @@ if ($tid && $pun_config['o_topic_review'] != '0')
 	while ($cur_post = $db->fetch_assoc($result))
 	{
 		$post_count++;
+		
+		//new variable for quote button -schmatzler
+		$quotebuttonmsg = $cur_post['message'];
+		//replace linebreaks on Win + Lin
+		$quotebuttonmsg = str_replace("\r\n", '\r\n', $quotebuttonmsg);
+		$quotebuttonmsg = str_replace("\n", '\n', $quotebuttonmsg);
+		//replace quotes
+		$quotebuttonmsg = str_replace('"', '\"', $quotebuttonmsg);
+		//replace single quotes
+		$quotebuttonmsg = str_replace("'", "\'", $quotebuttonmsg);
 
 		$cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
@@ -772,6 +786,20 @@ if ($tid && $pun_config['o_topic_review'] != '0')
 						<dl>
 							<dt><strong><?php echo pun_htmlspecialchars($cur_post['poster']) ?></strong></dt>
 							<dd><span><?php echo format_time($cur_post['posted']) ?></span></dd>
+							<!--Quote button Mod schmatzler-->
+							<p><input type="button" value="Zitieren (BETA)" id="add<?php echo $cur_post['posted'] ?>" /></p>
+
+<script>
+<?php echo '
+	$(document).ready(function(){
+	  $("#add'.$cur_post['posted'].'").click(function(){
+	    var txt = $.trim($(this).text());
+	    var box = $("#req_message");
+	    box.val(box.val() + "[quote='.pun_htmlspecialchars($cur_post['poster']).';'.$cur_post['id'].']\r\n'.$quotebuttonmsg.'\r\n[/quote]\r\n");
+	  });
+	});'?>
+</script>
+
 						</dl>
 					</div>
 					<div class="postright">
