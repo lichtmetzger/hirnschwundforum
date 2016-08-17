@@ -24,7 +24,7 @@ class addon_recaptcha extends flux_addon
 
         if (empty($errors) && !$this->verify_user_response())
         {
-            $errors[] = 'Please prove that you are human.';
+            $errors[] = 'Bitte beweise, dass du ein Mensch bist.';
         }
     }
 
@@ -37,9 +37,9 @@ class addon_recaptcha extends flux_addon
 ?>
         <div class="inform">
             <fieldset>
-                <legend>Are you a human?</legend>
+                <legend>Bist du ein Mensch?</legend>
                 <div class="infldset">
-                    <p>Please prove that you're a human being.</p>
+                    <p>Bitte beweise, dass du ein menschliches Wesen bist.</p>
                     <script src="https://www.google.com/recaptcha/api.js"></script>
                     <div class="g-recaptcha" data-sitekey="<?php echo pun_htmlspecialchars($site_key) ?>"></div>
                 </div>
