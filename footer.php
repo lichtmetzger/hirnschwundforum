@@ -19,6 +19,8 @@ ob_end_clean();
 // START SUBST - <pun_footer>
 ob_start();
 
+require PUN_ROOT.'include/uploadf.php';
+
 ?>
 <div id="brdfooter" class="block">
 	<h2><span><?php echo $lang_common['Board footer'] ?></span></h2>
