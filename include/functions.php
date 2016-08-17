@@ -1053,6 +1053,7 @@ function message($message, $no_back_link = false, $http_status = null)
 
 
 //
+// Time Mod
 // Adapted from osm's time2str function on StackOverflow
 //
 function time2str($ts)
@@ -1068,22 +1069,22 @@ function time2str($ts)
     $diff = time() - $ts;
 
     if($diff == 0)
-        return 'now';
+        return 'jetzt';
     elseif($diff > 0)
     {
         $day_diff = floor($diff / 86400);
         if($day_diff == 0)
         {
-            if($diff < 60) return 'just now';
-            if($diff < 120) return '1 minute ago';
-            if($diff < 3600) return floor($diff / 60) . ' minutes ago';
-            if($diff < 7200) return '1 hour ago';
-            if($diff < 86400) return floor($diff / 3600) . ' hours ago';
+            if($diff < 60) return 'gerade eben';
+            if($diff < 120) return 'vor einer Minute';
+            if($diff < 3600) return 'vor '.floor($diff / 60) . ' Minuten';
+            if($diff < 7200) return 'vor einer Stunde';
+            if($diff < 86400) return 'vor '.floor($diff / 3600) . ' Stunden';
         }
-        if($day_diff == 1) return 'Yesterday';
-        if($day_diff < 7) return $day_diff . ' days ago';
-        if($day_diff < 31) return ceil($day_diff / 7) . ' weeks ago';
-        if($day_diff < 60) return 'last month';
+        if($day_diff == 1) return 'Gestern';
+        if($day_diff < 7) return 'vor '.$day_diff . ' Tagen';
+        if($day_diff < 31) return 'vor '.ceil($day_diff / 7) . ' Wochen';
+        if($day_diff < 60) return 'letzten Monat';
         if(date('Y') == date('Y', $ts)){
           return date('F j', $ts); //add time!
         } else {
@@ -1132,8 +1133,16 @@ function format_time($timestamp, $date_only = false, $date_format = null, $time_
 	else if ($time_only)
 		return gmdate($time_format, $timestamp);
 	else
-		//return $date.' '.gmdate($time_format, $timestamp);
+	
+	//relative time mod
+	if ($pun_user['reltime'] == 1)
+	{
 		return time2str($timestamp);
+	}
+	else
+	{
+		return $date.' '.gmdate($time_format, $timestamp);
+	}
 }
 
 

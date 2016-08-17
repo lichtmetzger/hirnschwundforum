@@ -76,4 +76,6 @@ $lang_prof_reg = array(
 'UTC+13:00'					=>	'(WEZ+13:00) Tonga, Phoenix-Inseln, Kamtschatka',
 'UTC+14:00'					=>	'(WEZ+14:00) Grenz-Inseln',
 
+'Relative Time'					=>	'Verwende relative Zeit',
+
 );
