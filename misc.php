@@ -53,7 +53,7 @@ else if ($action == 'markread')
 
 	check_csrf($_GET['csrf_token']);
 
-	$db->query('UPDATE '.$db->prefix.'users SET last_visit='.$pun_user['logged'].' WHERE id='.$pun_user['id']) or error('Unable to update user last visit data', __FILE__, __LINE__, $db->error());
+	$db->query('UPDATE '.$db->prefix.'users SET last_visit='.$pun_user['logged'].', tracked_topics=null WHERE id='.$pun_user['id']) or error('Unable to update user last visit data', __FILE__, __LINE__, $db->error());
 
 	// Reset tracked topics
 	set_tracked_topics(null);

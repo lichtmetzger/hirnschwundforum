@@ -115,7 +115,7 @@ function check_cookie(&$pun_user)
 				// Special case: We've timed out, but no other user has browsed the forums since we timed out
 				if ($pun_user['logged'] < ($now-$pun_config['o_timeout_visit']))
 				{
-					$db->query('UPDATE '.$db->prefix.'users SET last_visit='.$pun_user['logged'].' WHERE id='.$pun_user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
+					$db->query('UPDATE '.$db->prefix.'users SET last_visit='.$pun_user['logged'].', tracked_topics=null WHERE id='.$pun_user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
 					$pun_user['last_visit'] = $pun_user['logged'];
 				}
 
@@ -526,7 +526,7 @@ function update_users_online()
 			// If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
 			if ($cur_user['logged'] < ($now-$pun_config['o_timeout_visit']))
 			{
-				$db->query('UPDATE '.$db->prefix.'users SET last_visit='.$cur_user['logged'].' WHERE id='.$cur_user['user_id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
+				$db->query('UPDATE '.$db->prefix.'users SET last_visit='.$cur_user['logged'].', tracked_topics=null WHERE id='.$cur_user['user_id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
 				$db->query('DELETE FROM '.$db->prefix.'online WHERE user_id='.$cur_user['user_id']) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
 			}
 			else if ($cur_user['idle'] == '0')
@@ -613,35 +613,20 @@ function generate_page_title($page_title, $p = null)
 
 
 //
-// Save array of tracked topics in cookie
+// Save array of tracked topics to database
 //
 function set_tracked_topics($tracked_topics)
 {
-	global $cookie_name, $cookie_path, $cookie_domain, $cookie_secure, $pun_config;
-
-	$cookie_data = '';
+	global $pun_user, $db;
 	if (!empty($tracked_topics))
 	{
 		// Sort the arrays (latest read first)
 		arsort($tracked_topics['topics'], SORT_NUMERIC);
 		arsort($tracked_topics['forums'], SORT_NUMERIC);
+		$pun_user['tracked_topics'] = serialize($tracked_topics);
 
-		// Homebrew serialization (to avoid having to run unserialize() on cookie data)
-		foreach ($tracked_topics['topics'] as $id => $timestamp)
-			$cookie_data .= 't'.$id.'='.$timestamp.';';
-		foreach ($tracked_topics['forums'] as $id => $timestamp)
-			$cookie_data .= 'f'.$id.'='.$timestamp.';';
-
-		// Enforce a byte size limit (4096 minus some space for the cookie name - defaults to 4048)
-		if (strlen($cookie_data) > FORUM_MAX_COOKIE_SIZE)
-		{
-			$cookie_data = substr($cookie_data, 0, FORUM_MAX_COOKIE_SIZE);
-			$cookie_data = substr($cookie_data, 0, strrpos($cookie_data, ';')).';';
-		}
+		$db->query('UPDATE '.$db->prefix.'users SET tracked_topics=\''.$pun_user['tracked_topics'].'\' WHERE id='.$pun_user['id']) or error('Unable to update tracked topics', __FILE__, __LINE__, $db->error());
 	}
-
-	forum_setcookie($cookie_name.'_track', $cookie_data, time() + $pun_config['o_timeout_visit']);
-	$_COOKIE[$cookie_name.'_track'] = $cookie_data; // Set it directly in $_COOKIE as well
 }
 
 
@@ -650,28 +635,11 @@ function set_tracked_topics($tracked_topics)
 //
 function get_tracked_topics()
 {
-	global $cookie_name;
-
-	$cookie_data = isset($_COOKIE[$cookie_name.'_track']) ? $_COOKIE[$cookie_name.'_track'] : false;
-	if (!$cookie_data)
+	global $pun_user;
+	if($pun_user['tracked_topics'])
+		return unserialize($pun_user['tracked_topics']);
+	else
 		return array('topics' => array(), 'forums' => array());
-
-	if (strlen($cookie_data) > FORUM_MAX_COOKIE_SIZE)
-		return array('topics' => array(), 'forums' => array());
-
-	// Unserialize data from cookie
-	$tracked_topics = array('topics' => array(), 'forums' => array());
-	$temp = explode(';', $cookie_data);
-	foreach ($temp as $t)
-	{
-		$type = substr($t, 0, 1) == 'f' ? 'forums' : 'topics';
-		$id = intval(substr($t, 1));
-		$timestamp = intval(substr($t, strpos($t, '=') + 1));
-		if ($id > 0 && $timestamp > 0)
-			$tracked_topics[$type][$id] = $timestamp;
-	}
-
-	return $tracked_topics;
 }
 
 
