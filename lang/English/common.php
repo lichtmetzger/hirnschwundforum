@@ -166,6 +166,12 @@ $lang_common = array(
 'Size unit PiB'						=>	'%s PiB',
 'Size unit EiB'						=>	'%s EiB',
 
+'PM' => 'PM',
+'PMsend' => 'Send private message',
+'PMnew' => 'New private message',
+'PMmess' => 'You have new private messages (%s msgs.).',
+'Show' => 'Show',
+
 'Hidden text' => 'Spoiler!',
 
 );

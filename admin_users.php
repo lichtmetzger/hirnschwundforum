@@ -498,6 +498,13 @@ else if (isset($_POST['delete_users']) || isset($_POST['delete_users_comply']))
 
 		generate_users_info_cache();
 
+// New PMS
+		require PUN_ROOT.'include/pms_new/common_pmsn.php';
+		
+		foreach ($user_ids as $user_id)
+			pmsn_user_delete($user_id, 2);
+// New PMS
+
 		redirect('admin_users.php', $lang_admin_users['Users delete redirect']);
 	}
 

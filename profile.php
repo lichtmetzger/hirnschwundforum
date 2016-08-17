@@ -667,6 +667,14 @@ else if (isset($_POST['delete_user']) || isset($_POST['delete_user_comply']))
 		// Delete the user
 		$db->query('DELETE FROM '.$db->prefix.'users WHERE id='.$id) or error('Unable to delete user', __FILE__, __LINE__, $db->error());
 
+// New PMS
+		require PUN_ROOT.'include/pms_new/common_pmsn.php';
+
+		pmsn_user_delete($id, 2);
+
+		$db->query('DELETE FROM '.$db->prefix.'pms_new_block WHERE bl_id='.$id.' OR bl_user_id='.$id) or error('Unable to delete user in pms_new_block', __FILE__, __LINE__, $db->error());
+// New PMS
+
 		// Delete user avatar
 		delete_avatar($id);
 
@@ -988,6 +996,12 @@ else if (isset($_POST['form_sent']))
 	// If we changed the username we have to update some stuff
 	if ($username_updated)
 	{
+// New PMS
+		$db->query('UPDATE '.$db->prefix.'pms_new_topics SET starter=\''.$db->escape($form['username']).'\' WHERE starter_id='.$id) or error('Unable to update pms_new_topics', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'pms_new_topics SET to_user=\''.$db->escape($form['username']).'\' WHERE to_id='.$id) or error('Unable to update pms_new_topics', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'pms_new_posts SET poster=\''.$db->escape($form['username']).'\' WHERE poster_id='.$id) or error('Unable to update pms_new_posts', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'pms_new_posts SET edited_by=\''.$db->escape($form['username']).'\' WHERE edited_by=\''.$db->escape($old_username).'\'') or error('Unable to update pms_new_posts', __FILE__, __LINE__, $db->error());
+// New PMS
 		$db->query('UPDATE '.$db->prefix.'bans SET username=\''.$db->escape($form['username']).'\' WHERE username=\''.$db->escape($old_username).'\'') or error('Unable to update bans', __FILE__, __LINE__, $db->error());
 		// If any bans were updated, we will need to know because the cache will need to be regenerated.
 		if ($db->affected_rows() > 0)
@@ -1042,7 +1056,8 @@ else if (isset($_POST['form_sent']))
 flux_hook('profile_after_form_handling');
 
 
-$result = $db->query('SELECT u.username, u.email, u.title, u.realname, u.url, u.jabber, u.icq, u.msn, u.aim, u.yahoo, u.location, u.signature, u.disp_topics, u.disp_posts, u.email_setting, u.notify_with_post, u.auto_notify, u.show_smilies, u.show_img, u.show_img_sig, u.show_avatars, u.show_sig, u.timezone, u.dst, u.language, u.style, u.num_posts, u.last_post, u.registered, u.registration_ip, u.admin_note, u.date_format, u.time_format, u.last_visit, g.g_id, g.g_user_title, g.g_moderator FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+// add "g.g_pm, u.messages_enable," - New PMS
+$result = $db->query('SELECT u.username, u.email, u.title, u.realname, u.url, u.jabber, u.icq, u.msn, u.aim, u.yahoo, u.location, u.signature, u.disp_topics, u.disp_posts, u.email_setting, u.notify_with_post, u.auto_notify, u.show_smilies, u.show_img, u.show_img_sig, u.show_avatars, u.show_sig, u.timezone, u.dst, u.language, u.style, u.num_posts, u.last_post, u.registered, u.registration_ip, u.admin_note, u.date_format, u.time_format, u.last_visit, u.messages_enable, g.g_id, g.g_user_title, g.g_moderator, g.g_pm FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 if (!$db->num_rows($result))
 	message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -1104,6 +1119,15 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 		$user_personal[] = '<dt>'.$lang_common['Email'].'</dt>';
 		$user_personal[] = '<dd><span class="email">'.$email_field.'</span></dd>';
 	}
+
+// New PMS
+	if (!$pun_user['is_guest'] && $pun_config['o_pms_enabled'] == '1' && $pun_user['g_pm'] == 1 && $pun_user['messages_enable'] == 1)
+		if ($user['g_pm'] == 1 && $user['messages_enable'] == 1)
+		{
+			$user_personal[] = '<dt>'.$lang_common['PM'].'</dt>';
+			$user_personal[] = '<dd><span class="pmsnew"><a href="pmsnew.php?mdl=post&amp;uid='.$id.'">'.$lang_common['PMsend'].'</a></span></dd>';
+		}
+// New PMS
 
 	$user_messaging = array();
 
@@ -1276,6 +1300,12 @@ else
 			else
 				$email_field = '<label class="required"><strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
 		}
+
+// New PMS
+		if ($pun_config['o_pms_enabled'] == '1' && $pun_user['g_pm'] == 1 && $pun_user['messages_enable'] == 1 && $pun_user['id'] != $id)
+			if ($pun_user['g_id'] == PUN_ADMIN || ($user['g_pm'] == 1 && $user['messages_enable'] == 1))
+				$email_field .= "\t\t\t\t\t\t\t".'<p><span class="pmsnew"><a href="pmsnew.php?mdl=post&amp;uid='.$id.'">'.$lang_common['PMsend'].'</a></span></p>'."\n";
+// New PMS
 
 		$posts_field = '';
 		$posts_actions = array();
