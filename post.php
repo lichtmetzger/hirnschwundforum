@@ -21,7 +21,7 @@ if ($tid < 1 && $fid < 1 || $tid > 0 && $fid > 0)
 
 // Fetch some info about the topic and/or the forum
 if ($tid)
-	$result = $db->query('SELECT f.id, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, t.subject, t.closed, s.user_id AS is_subscribed FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') LEFT JOIN '.$db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$pun_user['id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$tid) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT f.id, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, t.subject, t.closed, s.user_id AS is_subscribed, t.last_poster, t.last_post FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') LEFT JOIN '.$db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$pun_user['id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$tid) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
 else
 	$result = $db->query('SELECT f.id, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fid) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
 
@@ -52,6 +52,13 @@ if ((($tid && (($cur_posting['post_replies'] == '' && $pun_user['g_post_replies'
 // Load the post.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/post.php';
 
+	// Mod double post protection
+	if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/mod_double_post.php'))
+       require PUN_ROOT.'lang/'.$pun_user['language'].'/mod_double_post.php';
+	else
+       require PUN_ROOT.'lang/English/mod_double_post.php';
+	// End mod double post protection
+
 // Start with a clean slate
 $errors = array();
 
@@ -64,6 +71,14 @@ if (isset($_POST['form_sent']))
 	// Flood protection
 	if (!isset($_POST['preview']) && $pun_user['last_post'] != '' && (time() - $pun_user['last_post']) < $pun_user['g_post_flood'])
 		$errors[] = sprintf($lang_post['Flood start'], $pun_user['g_post_flood'], $pun_user['g_post_flood'] - (time() - $pun_user['last_post']));
+
+	// Mod double post protection
+	else if (!isset($_POST['preview']) && $tid)
+	{
+		if($cur_posting['last_post'] != '' && $pun_user['username'] == $cur_posting['last_poster'] && (time() - $cur_posting['last_post']) < $pun_user['g_double_post'] * 60)
+			$errors[] = $lang_mod_double_post['Double post start'].' '.$pun_user['g_double_post'].' '.$lang_mod_double_post['Double post end'];	
+	}
+	// Mod double post protection
 
 	// Make sure they got here from the site
 	confirm_referrer(array('post.php', 'viewtopic.php'));
