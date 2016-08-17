@@ -170,6 +170,8 @@ if ($db->num_rows($result))
 		$sql = 'SELECT p.poster_id AS has_posted, t.id, t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'posts AS p ON t.id=p.topic_id AND p.poster_id='.$pun_user['id'].' WHERE t.id IN('.implode(',', $topic_ids).') GROUP BY t.id'.($db_type == 'pgsql' ? ', t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to, p.poster_id' : '').' ORDER BY t.sticky DESC, t.'.$sort_by.', t.id DESC';
 	}
 
+	require PUN_ROOT.'include/poll/poll_viewforum.php';
+
 	$result = $db->query($sql) or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
 
 	$topic_count = 0;
@@ -218,6 +220,8 @@ if ($db->num_rows($result))
 		}
 		else
 			$subject_new_posts = null;
+
+		require PUN_ROOT.'include/poll/poll_viewforum.php';
 
 		// Insert the status text before the subject
 		$subject = implode(' ', $status_text).' '.$subject;

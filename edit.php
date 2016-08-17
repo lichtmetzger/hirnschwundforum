@@ -138,6 +138,8 @@ if (isset($_POST['form_sent']))
 		// Update the post
 		$db->query('UPDATE '.$db->prefix.'posts SET message=\''.$db->escape($message).'\', hide_smilies='.$hide_smilies.$edited_sql.' WHERE id='.$id) or error('Unable to update post', __FILE__, __LINE__, $db->error());
 
+		require PUN_ROOT.'include/poll/poll_edit.php';
+
 		redirect('viewtopic.php?pid='.$id.'#p'.$id, $lang_post['Edit redirect']);
 	}
 }
@@ -255,6 +257,8 @@ if ($pun_config['o_smilies'] == '1')
 	else
 		$checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['Hide smilies'].'<br /></label>';
 }
+
+require PUN_ROOT.'include/poll/poll_edit.php';
 
 if ($is_admmod)
 {

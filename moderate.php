@@ -580,6 +580,9 @@ else if (isset($_POST['merge_topics']) || isset($_POST['merge_topics_comply']))
 
 		// Merge the posts into the topic
 		$db->query('UPDATE '.$db->prefix.'posts SET topic_id='.$merge_to_tid.' WHERE topic_id IN('.implode(',', $topics).')') or error('Unable to merge the posts into the topic', __FILE__, __LINE__, $db->error());
+		
+		// POLL MOD: Delete polls
+		$db->query('DELETE FROM '.$db->prefix.'polls WHERE pollid IN('.$topics.')') or error('Unable to delete poll', __FILE__, __LINE__, $db->error());
 
 		// Update any subscriptions
 		$result = $db->query('SELECT DISTINCT user_id FROM '.$db->prefix.'topic_subscriptions WHERE topic_id IN('.implode(',', $topics).')') or error('Unable to fetch subscriptions of merged topics', __FILE__, __LINE__, $db->error());
@@ -892,7 +895,7 @@ if ($db->num_rows($result))
 		$topic_ids[] = $cur_topic_id;
 
 	// Select topics
-	$result = $db->query('SELECT id, poster, subject, posted, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topic_ids).') ORDER BY sticky DESC, '.$sort_by.', id DESC') or error('Unable to fetch topic list for forum', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT id, poster, subject, posted, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to, question FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topic_ids).') ORDER BY sticky DESC, '.$sort_by.', id DESC') or error('Unable to fetch topic list for forum', __FILE__, __LINE__, $db->error());
 
 	$button_status = '';
 	$topic_count = 0;
@@ -917,6 +920,15 @@ if ($db->num_rows($result))
 
 		if ($pun_config['o_censoring'] == '1')
 			$cur_topic['subject'] = censor_words($cur_topic['subject']);
+
+		// POLL MOD:
+		if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/poll.php'))
+			require PUN_ROOT.'lang/'.$pun_user['language'].'/poll.php';
+		else
+			require PUN_ROOT.'lang/English/poll.php';
+			
+		if ($cur_topic['question'] != '')
+			$subject = $lang_poll['Poll'] . ': '.$subject;
 
 		if ($cur_topic['sticky'] == '1')
 		{

@@ -446,6 +446,8 @@ if (isset($_POST['form_sent']))
 			$db->query('UPDATE '.$db->prefix.'online SET last_post='.$now.' WHERE ident=\''.$db->escape(get_remote_address()).'\'' ) or error('Unable to update user', __FILE__, __LINE__, $db->error());
 		}
 
+		require PUN_ROOT.'include/poll/poll_post.php';
+
 		redirect('viewtopic.php?pid='.$new_pid.'#p'.$new_pid, $lang_post['Post redirect']);
 	}
 }
@@ -673,6 +675,8 @@ if (!$pun_user['is_guest'])
 {
 	if ($pun_config['o_smilies'] == '1')
 		$checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(isset($_POST['hide_smilies']) ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
+
+require PUN_ROOT.'include/poll/poll_post.php';
 
 	if ($pun_config['o_topic_subscriptions'] == '1')
 	{

@@ -706,6 +706,9 @@ function delete_topic($topic_id)
 	// Delete the topic and any redirect topics
 	$db->query('DELETE FROM '.$db->prefix.'topics WHERE id='.$topic_id.' OR moved_to='.$topic_id) or error('Unable to delete topic', __FILE__, __LINE__, $db->error());
 
+	// POLL MOD: Delete the poll
+	$db->query('DELETE FROM '.$db->prefix.'polls WHERE pollid='.$topic_id) or error('Unable to delete poll', __FILE__, __LINE__, $db->error());
+
 	// Create a list of the post IDs in this topic
 	$post_ids = '';
 	$result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
