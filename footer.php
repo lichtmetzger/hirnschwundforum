@@ -124,6 +124,9 @@ else if ($footer_style == 'viewtopic')
 </div>
 <?php
 
+if (!empty($mediajs))
+	echo "\n".'<script type="text/javascript" src="js/media.min.js"></script>'."\n";
+
 // Display debug info (if enabled/defined)
 if (defined('PUN_DEBUG'))
 {
