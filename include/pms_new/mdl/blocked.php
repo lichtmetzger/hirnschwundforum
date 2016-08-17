@@ -61,7 +61,7 @@ function ChekUncheck()
 /* ]]> */
 </script>
 
-	<div class="block">
+	<div class="block" style="margin-left:0 !important">
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
 		</div>

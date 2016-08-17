@@ -156,10 +156,10 @@ if (isset($to_user['id']) && $to_user['id'] != $sid)
 
 generate_pmsn_menu($pmsn_modul);
 
-/*	<div class="blockform">
+/*	<div class="blockform" style="margin-left:0px !important">
 */
 ?>
-	<div class="block">
+	<div class="block" style="margin-left:0 !important">
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
 			<p class="postlink actions conr"><?php echo $pmsn_f_cnt ?></p>
@@ -361,7 +361,7 @@ if ($quickpost)
 
 ?>
 
-	<div id="quickpost" class="blockform">
+	<div id="quickpost" class="blockform" style="margin-left: 0px !important">
 		<h2><span><?php echo $lang_topic['Quick post'] ?></span></h2>
 		<div class="box">
 			<form id="quickpostform" method="post" action="pmsnew.php?mdl=post&amp;tid=<?php echo $tid.$sidamp ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">

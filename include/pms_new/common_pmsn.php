@@ -20,48 +20,30 @@ function generate_pmsn_menu($page = '')
 
 ?>
 <div class="block2col">
-	<div class="blockmenu">
+	<!--<div class="blockmenu">-->
 <?php
 	if ($pun_user['messages_enable'] == 1 && $pun_user['g_pm'] == 1)
 	{
 ?>
-		<h2><span><?php echo $lang_pmsn['Boxs'] ?></span></h2>
-		<div class="box">
-			<div class="inbox">
-				<ul>
-					<li<?php if ($page == 'new')  echo ' class="isactive"'; ?>><a href="pmsnew.php<?php echo $sidvop ?>"><?php echo $lang_pmsn['mNew'].(($pmsn_kol_new==0) ? '' : '&#160;('.$pmsn_kol_new.')') ?></a></li>
-					<li<?php if ($page == 'list') echo ' class="isactive"'; ?>><a href="pmsnew.php?mdl=list<?php echo $sidamp ?>"><?php echo $lang_pmsn['mList'].'&#160;('.$pmsn_kol_list.')' ?></a></li>
-					<li<?php if ($page == 'save') echo ' class="isactive"'; ?>><a href="pmsnew.php?mdl=save<?php echo $sidamp ?>"><?php echo $lang_pmsn['mSave'].(($pmsn_kol_save==0) ? '' : '&#160;('.$pmsn_kol_save.')') ?></a></li>
-				</ul>
-			</div>
-		</div>
+		<?php echo $lang_pmsn['Boxs'] ?>: 
+					<a href="pmsnew.php<?php echo $sidvop ?>"><?php echo $lang_pmsn['mNew'].(($pmsn_kol_new==0) ? '' : '&#160;('.$pmsn_kol_new.')') ?></a> |
+					<a href="pmsnew.php?mdl=list<?php echo $sidamp ?>"><?php echo $lang_pmsn['mList'].'&#160;('.$pmsn_kol_list.')' ?></a> |
+					<a href="pmsnew.php?mdl=save<?php echo $sidamp ?>"><?php echo $lang_pmsn['mSave'].(($pmsn_kol_save==0) ? '' : '&#160;('.$pmsn_kol_save.')') ?></a>
+
 <?php
 		if ($pun_user['g_pm_limit'] != 0)
 		{
 ?>
-		<h2 class="block2"><span><?php echo $lang_pmsn['Storage'] ?></span></h2>
-		<div class="box">
-			<div class="inbox">
-				<ul>
-					<li<?php if ($pmsn_kol_list + 1 >= $pun_user['g_pm_limit']) echo ' style="color: red;"'; ?>><?php echo $lang_pmsn['mList'].': '.intval($pmsn_kol_list/$pun_user['g_pm_limit']*100).'%' ?></li>
-					<li<?php if ($pmsn_kol_save + 1 >= $pun_user['g_pm_limit']) echo ' style="color: red;"'; ?>><?php echo $lang_pmsn['mSave'].': '.intval($pmsn_kol_save/$pun_user['g_pm_limit']*100).'%' ?></li>
-				</ul>
-			</div>
-		</div>
+		<?php echo $lang_pmsn['Storage'] ?>:
+					<?php echo $lang_pmsn['mList'].': '.intval($pmsn_kol_list/$pun_user['g_pm_limit']*100).'%' ?>
+					<?php echo $lang_pmsn['mSave'].': '.intval($pmsn_kol_save/$pun_user['g_pm_limit']*100).'%' ?>
 <?php
 		}
 ?>
-		<h2 class="block2"><span><?php echo $lang_pmsn['Options'] ?></span></h2>
-		<div class="box">
-			<div class="inbox">
-				<ul>
-					<li><a href="pmsnew.php?action=onoff&amp;csrf_token=<?php echo pmsn_csrf_token('onoff') ?>"><?php echo $lang_pmsn['Off'] ?></a></li>
-					<li><a href="pmsnew.php?action=email&amp;csrf_token=<?php echo pmsn_csrf_token('email') ?>"><?php echo (($pun_user['messages_email'] == 1) ? $lang_pmsn['Email on'] : $lang_pmsn['Email off']) ?></a></li>
-					<li<?php if ($page == 'blocked') echo ' class="isactive"'; ?>><a href="pmsnew.php?mdl=blocked"><?php echo $lang_pmsn['blocked'] ?></a></li>
-				</ul>
-			</div>
-		</div>
-	</div>
+		-- <?php echo $lang_pmsn['Options'] ?>:
+					<a href="pmsnew.php?action=onoff&amp;csrf_token=<?php echo pmsn_csrf_token('onoff') ?>"><?php echo $lang_pmsn['Off'] ?></a> |
+					<a href="pmsnew.php?action=email&amp;csrf_token=<?php echo pmsn_csrf_token('email') ?>"><?php echo (($pun_user['messages_email'] == 1) ? $lang_pmsn['Email on'] : $lang_pmsn['Email off']) ?></a> |
+					<a href="pmsnew.php?mdl=blocked"><?php echo $lang_pmsn['blocked'] ?></a>
 
 <?php
 	}

@@ -31,7 +31,7 @@ require PUN_ROOT.'header.php';
 generate_pmsn_menu($pmsn_modul);
 
 ?>
-	<div class="blockform">
+	<div class="blockform" style="margin-left:0px !important">
 		<h2><span><?php echo $lang_pmsn['Info'] ?></span></h2>
 		<div class="box">
 				<div id="infono" class="inform">

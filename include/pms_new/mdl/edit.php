@@ -158,7 +158,7 @@ else if (isset($_POST['preview']))
 	$preview_message = parse_message($message, $hide_smilies);
 ?>
 
-	<div class="block">
+	<div class="block" style="margin-left:0 !important">
 		<div id="postpreview" class="blockpost">
 			<h2><span><?php echo $lang_post['Post preview'] ?></span></h2>
 			<div class="box">
@@ -183,7 +183,7 @@ $cur_index = 1;
 
 ?>
 
-	<div id="editform" class="blockform">
+	<div id="editform" class="blockform" style="margin-left: 0px !important">
 		<h2><span><?php echo $lang_post['Edit post'] ?></span></h2>
 		<div class="box">
 			<form id="edit" method="post" action="pmsnew.php?mdl=edit&amp;pid=<?php echo $pid.$sidamp ?>&amp;action=edit" onsubmit="return process_form(this)">

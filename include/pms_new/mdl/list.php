@@ -33,7 +33,7 @@ generate_pmsn_menu($pmsn_modul);
 if ($pmsn_kol_list == 0)
 {
 ?>
-	<div class="blockform">
+	<div class="blockform" style="margin-left:0px !important">
 		<p class="postlink actions conr"><?php echo $pmsn_f_cnt ?></p>
 		<h2><span><?php echo $lang_pmsn['Info'] ?></span></h2>
 		<div class="box">
@@ -86,7 +86,7 @@ function ChekUncheck()
 /* ]]> */
 </script>
 
-	<div class="block">
+	<div class="block" style="margin-left:0 !important">
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
 			<p class="postlink actions conr"><?php echo $pmsn_f_cnt ?></p>
