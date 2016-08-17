@@ -129,6 +129,9 @@ if (isset($_POST['form_sent']))
 
 		if ($can_edit_subject)
 		{
+			// Update the topic and any redirect topics
+			$db->query('UPDATE '.$db->prefix.'topics SET subject=\''.$db->escape($subject).'\', sticky='.$stick_topic.' WHERE id='.$cur_post['tid'].' OR moved_to='.$cur_post['tid']) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+
 			// Is the current topic last?
 			$result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id='.$cur_post['last_post_id'].' AND topic_id='.$cur_post['tid']);
 			if ($db->num_rows($result))
