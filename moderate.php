@@ -169,6 +169,44 @@ if (isset($_GET['tid']))
 			if ($db->num_rows($result) != $num_posts_splitted)
 				message($lang_common['Bad request'], false, '404 Not Found');
 
+			// MOD Move Posts: Check for destination topic ID and get its info if specified
+			$destination_topic = isset($_POST['destination_topic']) ? $_POST['destination_topic'] : 0;
+			$destination_topic_id = 0;
+			if ($destination_topic) 
+			{
+				// If a viewtopic page link was submitted, get the topic ID from it
+				if (basename(parse_url($destination_topic, PHP_URL_PATH)) == 'viewtopic.php')
+				{
+					parse_str(parse_url($destination_topic, PHP_URL_QUERY), $destination_url_arguments);
+					$destination_topic_id = $destination_url_arguments['id'];
+				}
+				// Else if a number was submitted, use that for the topic ID
+				elseif (ctype_digit($destination_topic))
+				{
+					$destination_topic_id = $destination_topic;
+				}
+				// Otherwise faulty form input was supplied so show error
+				else
+				{
+					message('To move posts to an existing topic, please enter either the destination topic\'s ID or a link to the topic\'s page.');
+				}
+				// Make sure the specified topic exists and gets its num of replies and source forum
+				$destination_topic_id = intval($destination_topic_id);
+				$result = $db->query('SELECT num_replies, forum_id FROM '.$db->prefix.'topics WHERE id='.$destination_topic_id) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
+				if (!$db->num_rows($result))
+				{
+					message($lang_common['Bad request']);
+				}
+				$destination_topic_row = $db->fetch_assoc($result);
+				// Set FluxBB variables used for splitting posts
+				$new_tid = $destination_topic_id;
+				$move_to_forum = $destination_topic_row['forum_id'];
+				// Set move post mod's num of replies variable for the destination topic
+				$new_num_replies = $destination_topic_row['num_replies'] + $num_posts_splitted;
+			}
+			// MOD Move Posts: Put FluxBB's default 'split posts to new topic' code into else conditional
+			else
+			{
 			// Verify that the move to forum ID is valid
 			$result = $db->query('SELECT 1 FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.group_id='.$pun_user['g_id'].' AND fp.forum_id='.$move_to_forum.') WHERE f.redirect_url IS NULL AND (fp.post_topics IS NULL OR fp.post_topics=1)') or error('Unable to fetch forum permissions', __FILE__, __LINE__, $db->error());
 			if (!$db->num_rows($result))
@@ -181,7 +219,8 @@ if (isset($_GET['tid']))
 			$new_subject = isset($_POST['new_subject']) ? pun_trim($_POST['new_subject']) : '';
 
 			if ($new_subject == '')
-				message($lang_post['No subject']);
+						// MOD Move Posts: Changed from default $lang_post['No subject'] error message to account for functionality of moving to existing topic
+						message('Either an existing topic id to move to or a subject for a new topic must be entered to split posts');
 			else if (pun_strlen($new_subject) > 70)
 				message($lang_post['Too long subject']);
 
@@ -192,6 +231,11 @@ if (isset($_GET['tid']))
 			// Create the new topic
 			$db->query('INSERT INTO '.$db->prefix.'topics (poster, subject, posted, first_post_id, forum_id) VALUES (\''.$db->escape($first_post_data['poster']).'\', \''.$db->escape($new_subject).'\', '.$first_post_data['posted'].', '.$first_post_data['id'].', '.$move_to_forum.')') or error('Unable to create new topic', __FILE__, __LINE__, $db->error());
 			$new_tid = $db->insert_id();
+
+				// MOD Move Posts: Use mod's num of replies variable for the destination new topic
+				$new_num_replies = $num_posts_splitted - 1;
+			}
+			// MOD Move Posts: End of added else conditional
 
 			// Move the posts to the new topic
 			$db->query('UPDATE '.$db->prefix.'posts SET topic_id='.$new_tid.' WHERE id IN('.$posts.')') or error('Unable to move posts into new topic', __FILE__, __LINE__, $db->error());
@@ -207,9 +251,12 @@ if (isset($_GET['tid']))
 			// Get last_post, last_post_id, and last_poster from the new topic and update it
 			$result = $db->query('SELECT id, poster, posted FROM '.$db->prefix.'posts WHERE topic_id='.$new_tid.' ORDER BY id DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 			$last_post_data = $db->fetch_assoc($result);
-			$db->query('UPDATE '.$db->prefix.'topics SET last_post='.$last_post_data['posted'].', last_post_id='.$last_post_data['id'].', last_poster=\''.$db->escape($last_post_data['poster']).'\', num_replies='.($num_posts_splitted-1).' WHERE id='.$new_tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+			// MOD Move Posts: Query edited to use mod's $new_num_replies variable
+			$db->query('UPDATE '.$db->prefix.'topics SET last_post='.$last_post_data['posted'].', last_post_id='.$last_post_data['id'].', last_poster=\''.$db->escape($last_post_data['poster']).'\', num_replies='.$new_num_replies.' WHERE id='.$new_tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
 
 			update_forum($fid);
+			// MOD Move Posts: Added if conditional to check that the destination topic's forum is different from the source topic's before bothering to update it
+			if ($move_to_forum != $fid)
 			update_forum($move_to_forum);
 
 			redirect('viewtopic.php?id='.$new_tid, $lang_misc['Split posts redirect']);
@@ -218,7 +265,8 @@ if (isset($_GET['tid']))
 		$result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.post_topics IS NULL OR fp.post_topics=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
 
 		$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_misc['Moderate']);
-		$focus_element = array('subject','new_subject');
+		// MOD Move Posts: Changed form focus field to destination topic field instead of new topic title
+		$focus_element = array('subject', 'destination_topic_id');
 		define('PUN_ACTIVE_PAGE', 'index');
 		require PUN_ROOT.'header.php';
 
@@ -232,7 +280,13 @@ if (isset($_GET['tid']))
 					<legend><?php echo $lang_misc['Confirm split legend'] ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="posts" value="<?php echo implode(',', array_map('intval', array_keys($posts))) ?>" />
-						<label class="required"><strong><?php echo $lang_misc['New subject'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="new_subject" size="80" maxlength="70" /><br /></label>
+						<?php 
+						// MOD Move Posts: Added destination_topic field and corresponding UI text, and removed 'required' attribute from new_subject field
+						?>
+						<label>Destination topic (topic ID or topic URL) <br /><input type="text" name="destination_topic" size="80" maxlength="256" /><br /></label>
+						<p>Or to move the posts to an entirely new topic, enter the new topic title and select its destination forum below.</p>
+						<label><?php echo $lang_misc['New subject'] ?> <br /><input type="text" name="new_subject" size="80" maxlength="70" /><br /></label>
+						<?php // MOD Move Posts: End of mod's form field edits ?>
 						<label><?php echo $lang_misc['Move to'] ?>
 						<br /><select name="move_to_forum">
 <?php
