@@ -29,7 +29,7 @@ if ($pun_config['o_regs_allow'] == '0')
 
 // User pressed the cancel button
 if (isset($_GET['cancel']))
-	redirect('index.php', $lang_register['Reg cancel redirect']);
+	redirect('https://youtu.be/V4UfAL9f74I?t=7s', $lang_register['Reg cancel redirect']);
 
 
 else if ($pun_config['o_rules'] == '1' && !isset($_GET['agree']) && !isset($_POST['form_sent']))
