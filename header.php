@@ -102,7 +102,9 @@ if (!defined('PUN_ALLOW_INDEX'))
 
 ?>
 <title><?php echo generate_page_title($page_title, $p) ?></title>
-<link rel="stylesheet" type="text/css" href="style/<?php echo $pun_user['style'].'.css' ?>" />
+<link rel="stylesheet" type="text/css" href="style/<?php echo $pun_user['style'].'.css?id=10' ?>" />
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+
 <?php
 
 if (defined('PUN_ADMIN_CONSOLE'))
@@ -181,7 +183,9 @@ $tpl_main = str_replace('<pun_page>', htmlspecialchars(basename($_SERVER['SCRIPT
 
 
 // START SUBST - <pun_title>
-$tpl_main = str_replace('<pun_title>', '<h1><a href="index.php">'.pun_htmlspecialchars($pun_config['o_board_title']).'</a></h1>', $tpl_main);
+//$tpl_main = str_replace('<pun_title>', '<h1><a href="index.php">'.pun_htmlspecialchars($pun_config['o_board_title']).'</a></h1>', $tpl_main);
+//show logo in header
+$tpl_main = str_replace('<pun_title>', '<h1><a href="index.php">'.pun_htmlspecialchars($pun_config['o_board_title']).'<img src="https://hirnschwund.net/hirnschwund-logo-forum.png" style="float:right;width:20%;max-width:150px;" class="header-logo" /></a></h1>', $tpl_main);
 // END SUBST - <pun_title>
 
 
