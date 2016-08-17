@@ -33,6 +33,8 @@ $lang_post = array(
 'Edit post legend'	=>	'Ändere den Beitrag und speichere die Änderungen',
 'Silent edit'		=>	'Stille Änderung ("geändert durch …" in der Beitragsansicht NICHT anzeigen)',
 'Edit post'			=>	'Beitrag ändern',
-'Edit redirect'		=>	'Beitrag geändert. Leite weiter …'
+'Edit redirect'		=>	'Beitrag geändert. Leite weiter …',
+
+'EditPost edit' => 'Erlaube die Nachricht ohne Begrenzung editieren zu können'
 
 );

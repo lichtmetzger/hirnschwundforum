@@ -33,6 +33,8 @@ $lang_post = array(
 'Edit post legend'	=>	'Edit the post and submit changes',
 'Silent edit'		=>	'Silent edit (don\'t display "Edited by ..." in topic view)',
 'Edit post'			=>	'Edit post',
-'Edit redirect'		=>	'Post updated. Redirecting …'
+'Edit redirect'		=>	'Post updated. Redirecting …',
+
+'EditPost edit' => 'To allow to edit the given message without restrictions'
 
 );

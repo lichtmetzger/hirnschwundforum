@@ -42,6 +42,9 @@ if (($pun_user['g_delete_posts'] == '0' ||
 	!$is_admmod)
 	message($lang_common['No permission'], false, '403 Forbidden');
 
+if (!$is_admmod && $pun_user['g_deledit_interval'] != 0 && (time()-$cur_post['posted']) > $pun_user['g_deledit_interval'])
+	message($lang_common['No permission']);
+
 if ($is_admmod && $pun_user['g_id'] != PUN_ADMIN && in_array($cur_post['poster_id'], get_admin_ids()))
 	message($lang_common['No permission'], false, '403 Forbidden');
 
