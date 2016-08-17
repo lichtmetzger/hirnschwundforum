@@ -374,8 +374,8 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 				message($lang_profile['Bad type']);
 
 			// Make sure the file isn't too big
-			if ($uploaded_file['size'] > $pun_config['o_avatars_size'])
-				message($lang_profile['Too large'].' '.forum_number_format($pun_config['o_avatars_size']).' '.$lang_profile['bytes'].'.');
+			//if ($uploaded_file['size'] > $pun_config['o_avatars_size'])
+			//	message($lang_profile['Too large'].' '.forum_number_format($pun_config['o_avatars_size']).' '.$lang_profile['bytes'].'.');
 
 			// Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
 			if (!@move_uploaded_file($uploaded_file['tmp_name'], PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp'))
@@ -398,11 +398,23 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 			}
 
 			// Now check the width/height
-			if (empty($width) || empty($height) || $width > $pun_config['o_avatars_width'] || $height > $pun_config['o_avatars_height'])
+			if (empty($width) || empty($height)) //  || $width > $pun_config['o_avatars_width'] || $height > $pun_config['o_avatars_height'])
 			{
 				@unlink(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
 				message($lang_profile['Too wide or high'].' '.$pun_config['o_avatars_width'].'x'.$pun_config['o_avatars_height'].' '.$lang_profile['pixels'].'.');
 			}
+			
+			// resize
+ 			if ($uploaded_file['size'] > $pun_config['o_avatars_size'] || $width > $pun_config['o_avatars_width'] || $height > $pun_config['o_avatars_height'])
+ 			{
+ 				require PUN_ROOT.'include/upload.php';
+ 				
+ 				delete_avatar($id);
+ 				if (img_resize(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp', $pun_config['o_avatars_dir'].'/', $id, str_replace('.', '', $extension), $pun_config['o_avatars_width'], $pun_config['o_avatars_height']) === false)
+ 					message('Error of resize');
+ 					
+				redirect('profile.php?section=personality&amp;id='.$id, $lang_profile['Avatar upload redirect']);
+ 			}
 
 			// Delete any old avatars and put the new one in place
 			delete_avatar($id);
