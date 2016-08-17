@@ -34,6 +34,11 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/prof_reg.php';
 // Load the profile.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/profile.php';
 
+if ( file_exists( PUN_ROOT.'plugins/spl/lang/'.$pun_user['language'].'/social-profile-links.php' ) )
+  require PUN_ROOT.'plugins/spl/lang/'.$pun_user['language'].'/social-profile-links.php';
+else
+  require PUN_ROOT.'plugins/spl/lang/English/social-profile-links.php';
+
 
 if ($action == 'change_pass')
 {
@@ -873,6 +878,13 @@ else if (isset($_POST['form_sent']))
 			break;
 		}
 
+    case 'spl':
+    {
+      include( PUN_ROOT.'plugins/spl/profile-case.php' );
+
+      break;
+    }
+
 		case 'personality':
 		{
 			$form = array();
@@ -1057,7 +1069,7 @@ flux_hook('profile_after_form_handling');
 
 
 // add "g.g_pm, u.messages_enable," - New PMS
-$result = $db->query('SELECT u.username, u.email, u.title, u.realname, u.url, u.jabber, u.icq, u.msn, u.aim, u.yahoo, u.location, u.signature, u.disp_topics, u.disp_posts, u.email_setting, u.notify_with_post, u.auto_notify, u.show_smilies, u.show_img, u.show_img_sig, u.show_avatars, u.show_sig, u.timezone, u.dst, u.language, u.style, u.num_posts, u.last_post, u.registered, u.registration_ip, u.admin_note, u.date_format, u.time_format, u.last_visit, u.messages_enable, g.g_id, g.g_user_title, g.g_moderator, g.g_pm FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT u.username, u.email, u.title, u.realname, u.url, u.jabber, u.icq, u.msn, u.aim, u.yahoo, u.social_profile_links, u.location, u.signature, u.disp_topics, u.disp_posts, u.email_setting, u.notify_with_post, u.auto_notify, u.show_smilies, u.show_img, u.show_img_sig, u.show_avatars, u.show_sig, u.timezone, u.dst, u.language, u.style, u.num_posts, u.last_post, u.registered, u.registration_ip, u.admin_note, u.date_format, u.time_format, u.last_visit, u.messages_enable, g.g_id, g.g_user_title, g.g_moderator, g.g_pm FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 if (!$db->num_rows($result))
 	message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -1107,6 +1119,9 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 		$user_personal[] = '<dt>'.$lang_profile['Website'].'</dt>';
 		$user_personal[] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
 	}
+
+    if ( $user['social_profile_links'] != '' )
+      include( PUN_ROOT.'plugins/spl/profile.php' );
 
 	if ($user['email_setting'] == '0' && !$pun_user['is_guest'] && $pun_user['g_send_email'] == '1')
 		$email_field = '<a href="mailto:'.pun_htmlspecialchars($user['email']).'">'.pun_htmlspecialchars($user['email']).'</a>';
@@ -1566,6 +1581,12 @@ else
 <?php
 
 	}
+
+  else if ($section == 'spl')
+  {
+    include( PUN_ROOT.'plugins/spl/profile-section.php' );
+  }
+
 	else if ($section == 'personality')
 	{
 		if ($pun_config['o_avatars'] == '0' && $pun_config['o_signatures'] == '0')

@@ -23,6 +23,12 @@ if ($id < 1 && $pid < 1)
 // Load the viewtopic.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/topic.php';
 
+  // Load the social-profile-links.php language file
+  if ( file_exists( PUN_ROOT.'plugins/spl/lang/'.$pun_user['language'].'/social-profile-links.php' ) )
+    require PUN_ROOT.'plugins/spl/lang/'.$pun_user['language'].'/social-profile-links.php';
+  else
+    require PUN_ROOT.'plugins/spl/lang/English/social-profile-links.php';
+
 
 // If a post ID is specified we determine topic ID and page number so we can redirect to the correct message
 if ($pid)
@@ -228,7 +234,7 @@ require PUN_ROOT.'include/poll/poll_viewtopic.php';
 
 // Retrieve the posts (and their respective poster/online status)
 // add "g.g_pm, u.messages_enable," - New PMS
-$result = $db->query('SELECT u.email, u.title, u.url, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, u.messages_enable, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, g.g_id, g.g_user_title, g.g_pm, g.g_promote_next_group, o.user_id AS is_online FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT u.email, u.title, u.url, u.social_profile_links, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, u.messages_enable, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, g.g_id, g.g_user_title, g.g_pm, g.g_promote_next_group, o.user_id AS is_online FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 while ($cur_post = $db->fetch_assoc($result))
 {
 	$post_count++;
@@ -292,6 +298,10 @@ while ($cur_post = $db->fetch_assoc($result))
 
 				$user_contacts[] = '<span class="website"><a href="'.pun_htmlspecialchars($cur_post['url']).'" rel="nofollow">'.$lang_topic['Website'].'</a></span>';
 			}
+
+    if ( $cur_post['social_profile_links'] != '' )
+      include( PUN_ROOT.'plugins/spl/viewtopic.php' );
+
 		}
 
 // New PMS
