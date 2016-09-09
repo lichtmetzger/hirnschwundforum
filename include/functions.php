@@ -803,13 +803,20 @@ function delete_post($post_id, $topic_id)
 	//if (!$db->num_rows($result))
 		//message($lang_common['Bad request']);
 
-	$result = $db->query('SELECT p.id, p.poster, p.posted, t.forum_id AS forum_id FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON p.topic_id = t.id WHERE p.id='.$post_id) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+	// Fetch all of the info we can get from the posts database
+	$result = $db->query('SELECT p.id, p.poster, p.posted, p.topic_id, t.forum_id AS forum_id FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON p.topic_id = t.id WHERE p.id='.$post_id) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 	$post = $db->fetch_assoc($result);
+	
+	// Fetch the subject from the topics database
+	$result2 = $db->query('SELECT subject FROM '.$db->prefix.'topics WHERE id='.$post['topic_id']) or error('Unable to fetch subject info', __FILE__, __LINE__, $db->error());
+	$post2 = $db->fetch_assoc($result2);
+	
 
 	if (intval($pun_config['o_softdelete_forum']) > 0) {
 		if ($post['forum_id'] != $pun_config['o_softdelete_forum']) {
 			// Create the new topic
-			$db->query('INSERT INTO '.$db->prefix.'topics (poster, subject, posted, first_post_id, forum_id) VALUES (\''.$db->escape($post['poster']).'\', \'p'.intval($post['id']).'\', '.$post['posted'].', '.$post['id'].', '.$pun_config['o_softdelete_forum'].')') or error('Unable to create new topic', __FILE__, __LINE__, $db->error());
+			// Retain the old topic and show us who deleted the post
+			$db->query('INSERT INTO '.$db->prefix.'topics (poster, subject, posted, first_post_id, forum_id) VALUES (\''.$db->escape($post['poster']).'\', \'Aus: '.$db->escape($post2['subject']).' ('.$pun_user['username'].')\', '.$post['posted'].', '.$post['id'].', '.$pun_config['o_softdelete_forum'].')') or error('Unable to create new topic', __FILE__, __LINE__, $db->error());
 			$new_tid = $db->insert_id();
 
 			// Move the posts to the new topic
