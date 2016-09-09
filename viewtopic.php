@@ -149,9 +149,24 @@ if ($pun_config['o_censoring'] == '1')
 
 
 $quickpost = false;
-if ($pun_config['o_quickpost'] == '1' &&
+
+// only run this database intensive task when we're in the thoughts subforum
+if ($cur_topic['forum_id'] == 11) {
+// get the username of the current topics first post
+$result2 = $db->query('SELECT poster FROM '.$db->prefix.'topics WHERE id='.$id) or error('Unable to fetch first thoughts poster', __FILE__, __LINE__, $db->error());
+$firstpost = $db->fetch_assoc($result2);
+}
+
+// show quickpost only when the creator of a thought tries to reply
+if ($cur_topic['forum_id'] == 11 && $pun_user['username'] == $firstpost['poster'])
+{
+$quickpost = true;
+}
+
+// $cur_topic['forum_id'] != 11 -> Don't show quickpost box in the thoughts subforum for non-creators
+elseif ($pun_config['o_quickpost'] == '1' &&
 	($cur_topic['post_replies'] == '1' || ($cur_topic['post_replies'] == '' && $pun_user['g_post_replies'] == '1')) &&
-	($cur_topic['closed'] == '0' || $is_admmod))
+	($cur_topic['closed'] == '0' || $is_admmod) && $cur_topic['forum_id'] != 11) 
 {
 	// Load the post.php language file
 	require PUN_ROOT.'lang/'.$pun_user['language'].'/post.php';

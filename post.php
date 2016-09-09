@@ -42,6 +42,12 @@ $is_admmod = ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1'
 if ($tid && $pun_config['o_censoring'] == '1')
 	$cur_posting['subject'] = censor_words($cur_posting['subject']);
 
+// Make sure only the creator can post in the thoughts subforum
+if ($cur_posting['id'] == 11 && $pun_user['username'] != $cur_posting['last_poster'])
+{
+message('Du kannst in diesem Unterforum nur auf deine eigenen Gedanken antworten.', false, '403 Forbidden');
+}
+
 // Do we have permission to post?
 if ((($tid && (($cur_posting['post_replies'] == '' && $pun_user['g_post_replies'] == '0') || $cur_posting['post_replies'] == '0')) ||
 	($fid && (($cur_posting['post_topics'] == '' && $pun_user['g_post_topics'] == '0') || $cur_posting['post_topics'] == '0')) ||
