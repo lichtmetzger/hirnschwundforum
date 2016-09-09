@@ -738,7 +738,8 @@ function delete_topic($topic_id)
 	//if (!$db->num_rows($result))
 		//message($lang_common['Bad request']);
 
-	$result = $db->query('SELECT forum_id FROM '.$db->prefix.'topics WHERE id='.$topic_id) or error('Unable to fetch topic information');
+	// fetch forum id and subject so we can alter the second one later
+	$result = $db->query('SELECT forum_id, subject FROM '.$db->prefix.'topics WHERE id='.$topic_id) or error('Unable to fetch topic information');
 	$topic = $db->fetch_assoc($result);
 
 	if (intval($pun_config['o_softdelete_forum']) > 0 && $topic['forum_id'] != $pun_config['o_softdelete_forum']) {
@@ -747,6 +748,9 @@ function delete_topic($topic_id)
 			$db->query('DELETE FROM '.$db->prefix.'topics WHERE moved_to='.$topic_id) or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
 		
 			$db->query('UPDATE '.$db->prefix.'topics SET forum_id='.$pun_config['o_softdelete_forum'].' WHERE id='.$topic_id) or error('Unable to move topic', __FILE__, __LINE__, $db->error());
+			
+			// alter the subject to show who deleted it
+			$db->query('UPDATE '.$db->prefix.'topics SET subject=\'Thema: '.$db->escape($topic['subject']).' ('.$pun_user['username'].')\' WHERE id='.$topic_id) or error('Unable update topic subject', __FILE__, __LINE__, $db->error());
 
 			update_forum($topic['forum_id']);
 			update_forum($pun_config['o_softdelete_forum']);
