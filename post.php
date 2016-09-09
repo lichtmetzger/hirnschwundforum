@@ -43,7 +43,7 @@ if ($tid && $pun_config['o_censoring'] == '1')
 	$cur_posting['subject'] = censor_words($cur_posting['subject']);
 
 // Make sure only the creator can post in the thoughts subforum
-if ($cur_posting['id'] == 11 && $pun_user['username'] != $cur_posting['last_poster'])
+if ($cur_posting['id'] == 11 && $cur_posting['last_poster'] != NULL && $pun_user['username'] != $cur_posting['last_poster'])
 {
 message('Du kannst in diesem Unterforum nur auf deine eigenen Gedanken antworten.', false, '403 Forbidden');
 }
