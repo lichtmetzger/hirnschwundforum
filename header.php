@@ -105,6 +105,8 @@ if (!defined('PUN_ALLOW_INDEX'))
 <link rel="stylesheet" type="text/css" href="style/<?php echo $pun_user['style'].'.css?id=10' ?>" />
 <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
 
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 <?php
 
 if (defined('PUN_ADMIN_CONSOLE'))
