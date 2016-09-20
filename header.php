@@ -192,7 +192,7 @@ $tpl_main = str_replace('<pun_title>', '<h1><a href="index.php">'.pun_htmlspecia
 
 
 // START SUBST - <pun_desc>
-$tpl_main = str_replace('<pun_desc>', '<div id="brddesc">'.$pun_config['o_board_desc'].'</div>', $tpl_main);
+$tpl_main = str_replace('<pun_desc>', '<div id="brddesc">'.$pun_config['o_board_desc'].'<br/><br/>'.file_get_contents("https://hirnschwund.net/PMA/online.php?ext_counter&profile=1&server=1").'</div>', $tpl_main);
 // END SUBST - <pun_desc>
 
 
