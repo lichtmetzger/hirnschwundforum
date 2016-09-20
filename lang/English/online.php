@@ -15,7 +15,11 @@ $lang_online = array(
 // Language for online location
 'bot'					=>	'- - - - -',
 'viewing index'					=>	'Viewing Board Index',
-'searching'					=>	'Searching...', 
+'searching'					=>	'Searching...',
+'searching_recent'				=>	'Searching through recent posts',
+'searching_new'					=>	'Searching through new posts',
+'searching_replies'				=>	'Searching through replied posts',
+'searching_unanswered'				=>	'Searching through unanswered posts',
 'viewing userlist'					=>	'Viewing Userlist',
 'viewing online'					=>	'Viewing Users Online',
 'viewing rules'					=>	'Viewing Site Rules',

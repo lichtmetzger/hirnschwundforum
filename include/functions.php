@@ -2391,6 +2391,18 @@ function generate_user_location($url)
 		case 'misc.php?action=rules':
 			$location = $lang_online['viewing rules'];
 		break;
+		case stristr($url, 'search.php?action=show_recent'):
+		      $location = $lang_online['searching_recent'];
+		break;
+		case stristr($url, 'search.php?action=show_new'):
+		      $location = $lang_online['searching_new'];
+		break;
+		case stristr($url, 'search.php?action=show_replies'):
+		      $location = $lang_online['searching_replies'];
+		break;
+		case stristr($url, 'search.php?action=show_unanswered'):
+		      $location = $lang_online['searching_unanswered'];
+		break;
 		case stristr($url, 'search'):
 			$location = $lang_online['searching'];
 		break;
