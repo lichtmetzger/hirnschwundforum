@@ -938,6 +938,11 @@ MAIN POSTS
 	position:relative;
 	bottom:0;
 	clear:both;
+	max-height:90px;
+}
+
+.pun div.postsignature img {
+	max-height:90px;
 }
 
 .pun .codebox {
