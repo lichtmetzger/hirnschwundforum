@@ -254,7 +254,7 @@ require PUN_ROOT.'include/poll/poll_viewtopic.php';
 
 // Retrieve the posts (and their respective poster/online status)
 // add "g.g_pm, u.messages_enable," - New PMS
-$result = $db->query('SELECT u.email, u.title, u.url, u.social_profile_links, u.location, u.signature, u.email_setting, u.num_posts, u.num_warnings, u.registered, u.admin_note, u.messages_enable, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, p.edit_post, g.g_id, g.g_user_title, g.g_pm, g.g_promote_next_group, o.user_id AS is_online FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT u.email, u.title, u.url, u.social_profile_links, u.location, u.signature, u.email_setting, u.num_posts, u.num_warnings, u.registered, u.admin_note, u.messages_enable, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, p.edit_post, g.g_id, g.g_user_title, g.g_pm, g.g_promote_next_group, a.award, a.uid AS awarduser, a.pid AS awardpost, a.reason, o.user_id AS is_online FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'awards AS a ON a.uid=u.id LEFT JOIN '.$db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 while ($cur_post = $db->fetch_assoc($result))
 {
 	$post_count++;
@@ -264,7 +264,7 @@ while ($cur_post = $db->fetch_assoc($result))
 	$post_actions = array();
 	$is_online = '';
 	$signature = '';
-	$user_image_award = ''; // [Mod] Image Award added
+	$user_image_award = array(); // [Mod] Image Award added
 
 	// If the poster is a registered user
 	if ($cur_post['poster_id'] > 1)
@@ -275,22 +275,22 @@ while ($cur_post = $db->fetch_assoc($result))
 			require PUN_ROOT.'/lang/'.$pun_user['language'].'/admin_image_award.php';
         else
 			require PUN_ROOT.'/lang/English/admin_image_award.php';
-			
-	// Query the awards table for shiny medals
-	$result3 = $db->query('SELECT award, pid, reason FROM '.$db->prefix.'awards WHERE uid='.$cur_post['poster_id']) or error('Unable to fetch awards', __FILE__, __LINE__, $db->error());
 	
-	// Cycle through multiple avatars
-	while ($award = $db->fetch_assoc($result3))
-	{
-		if(strlen($award['pid']) > 0){	// if we have something there, figure out what to output...
-				$user_image_award .= "\t\t\t\t\t\t".'<dd class="award"><a href="/forum/viewtopic.php?pid='.$award['pid'].'#p'.$award['pid'].'"><img src="img/awards/'.$award['award'].'" width="100px" height="20px" /></a></dd>'."\n";
-				
+		if($cur_post['award']) {	// if we have something there, figure out what to output...
+				$user_image_award[] = '<a href="/forum/viewtopic.php?pid='.$cur_post['awardpost'].'#p'.$cur_post['awardpost'].'"><img src="img/awards/'.$cur_post['award'].'" width="100px" height="20px" /></a>';
+
 				//When the displayed post is also the awarded post, show the reason for the award! :)
-				if ($award['pid'] == $cur_post['id']) {
-				$user_image_reason .= '<dd class="reason" style="border:3px dashed green;padding:5px;">'.pun_htmlspecialchars($award['reason']).'</dd>';
+				if ($cur_post['awardpost'] == $cur_post['id']) {
+				echo '<dd class="reason" style="border:3px dashed green;padding:5px;">'.$cur_post['reason'].'</dd>';
 				}
 		}
-	}
+
+// DEBUG:
+// 		echo 'Award: '.$cur_post['award'].'Awarduser: '.$cur_post['awarduser'].'Awardpost: '.$cur_post['awardpost'].'Reason: '.$cur_post['reason'];
+// 		echo '<br>Post-ID: '.$cur_post['id'];
+
+
+
 	// [Mod] End Image Award
 	
 		if ($pun_user['g_view_users'] == '1')
@@ -454,7 +454,7 @@ if ($cur_post['num_warnings'] > 0)
 <?php if ($user_avatar != '') echo "\t\t\t\t\t\t".'<dd class="postavatar">'.$user_avatar.'</dd>'."\n"; ?>
 <?php if (count($user_info)) echo "\t\t\t\t\t\t".implode("\n\t\t\t\t\t\t", $user_info)."\n"; ?>
 <?php if (count($user_contacts)) echo "\t\t\t\t\t\t".'<dd class="usercontacts">'.implode(' ', $user_contacts).'</dd>'."\n"; ?>
-<?php if (strlen($user_image_award)>0) echo $user_image_award; // [Mod] Image Award added ?>
+<?php if (count($user_image_award)) echo "\t\t\t\t\t\t".'<dd class="award">'.implode(' ', $user_image_award).'</dd>'."\n"; // [Mod] Image Award added ?>
 					</dl>
 				</div>
 				<div class="postright">
@@ -462,7 +462,6 @@ if ($cur_post['num_warnings'] > 0)
 					<div class="postmsg">
 						<?php echo $cur_post['message']."\n" ?>
 <?php if ($cur_post['edited'] != '') echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.$lang_topic['Last edit'].' '.pun_htmlspecialchars($cur_post['edited_by']).' ('.format_time($cur_post['edited']).')</em></p>'."\n"; ?>
-<?php if (strlen($user_image_reason)>0) echo $user_image_reason; // [Mod] Image Award reason added ?>
 					</div>
 <?php if ($signature != '') echo "\t\t\t\t\t".'<div class="postsignature postmsg"><hr />'.$signature.'</div>'."\n"; ?>
 				</div>
