@@ -28,6 +28,7 @@ $lang_topic = array(
 'Mod controls'		=>	'Moderator controls',
 'New icon'			=>	'New post',
 'Re'				=>	'Re:',
-'Preview'			=>	'Preview'
+'Preview'			=>	'Preview',
+'Award'			=> 'Award'
 
 );

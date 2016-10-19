@@ -264,10 +264,35 @@ while ($cur_post = $db->fetch_assoc($result))
 	$post_actions = array();
 	$is_online = '';
 	$signature = '';
+	$user_image_award = ''; // [Mod] Image Award added
 
 	// If the poster is a registered user
 	if ($cur_post['poster_id'] > 1)
 	{
+	
+	// [Mod] Image Award
+		if (file_exists(PUN_ROOT.'/lang/'.$pun_user['language'].'/admin_image_award.php'))
+			require PUN_ROOT.'/lang/'.$pun_user['language'].'/admin_image_award.php';
+        else
+			require PUN_ROOT.'/lang/English/admin_image_award.php';
+			
+	// Query the awards table for shiny medals
+	$result3 = $db->query('SELECT award, pid, reason FROM '.$db->prefix.'awards WHERE uid='.$cur_post['poster_id']) or error('Unable to fetch awards', __FILE__, __LINE__, $db->error());
+	
+	// Cycle through multiple avatars
+	while ($award = $db->fetch_assoc($result3))
+	{
+		if(strlen($award['pid']) > 0){	// if we have something there, figure out what to output...
+				$user_image_award .= "\t\t\t\t\t\t".'<dd class="award"><a href="/forum/viewtopic.php?pid='.$award['pid'].'#p'.$award['pid'].'"><img src="img/awards/'.$award['award'].'" width="100px" height="20px" /></a></dd>'."\n";
+				
+				//When the displayed post is also the awarded post, show the reason for the award! :)
+				if ($award['pid'] == $cur_post['id']) {
+				$user_image_reason .= '<dd class="reason" style="border:3px dashed green;padding:5px;">'.pun_htmlspecialchars($award['reason']).'</dd>';
+				}
+		}
+	}
+	// [Mod] End Image Award
+	
 		if ($pun_user['g_view_users'] == '1')
 			$username = '<a href="profile.php?id='.$cur_post['poster_id'].'">'.pun_htmlspecialchars($cur_post['username']).'</a>';
 		else
@@ -385,6 +410,9 @@ if ($cur_post['num_warnings'] > 0)
 	else
 	{
 		$post_actions[] = '<li class="postreport"><span><a href="misc.php?report='.$cur_post['id'].'">'.$lang_topic['Report'].'</a></span></li>';
+		//ability to give an award
+			$post_actions[] = '<li class="postaward"><span><a href="admin_loader.php?plugin=AMP_Image_Award.php&id='.$cur_post['poster_id'].'&pid='.$cur_post['id'].'">'.$lang_topic['Award'].'</a></span></li>';
+			
 		if ($pun_user['g_id'] == PUN_ADMIN || !in_array($cur_post['poster_id'], $admin_ids))
 		{
 			$post_actions[] = '<li class="postdelete"><span><a href="delete.php?id='.$cur_post['id'].'">'.$lang_topic['Delete'].'</a></span></li>';
@@ -426,6 +454,7 @@ if ($cur_post['num_warnings'] > 0)
 <?php if ($user_avatar != '') echo "\t\t\t\t\t\t".'<dd class="postavatar">'.$user_avatar.'</dd>'."\n"; ?>
 <?php if (count($user_info)) echo "\t\t\t\t\t\t".implode("\n\t\t\t\t\t\t", $user_info)."\n"; ?>
 <?php if (count($user_contacts)) echo "\t\t\t\t\t\t".'<dd class="usercontacts">'.implode(' ', $user_contacts).'</dd>'."\n"; ?>
+<?php if (strlen($user_image_award)>0) echo $user_image_award; // [Mod] Image Award added ?>
 					</dl>
 				</div>
 				<div class="postright">
@@ -433,6 +462,7 @@ if ($cur_post['num_warnings'] > 0)
 					<div class="postmsg">
 						<?php echo $cur_post['message']."\n" ?>
 <?php if ($cur_post['edited'] != '') echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.$lang_topic['Last edit'].' '.pun_htmlspecialchars($cur_post['edited_by']).' ('.format_time($cur_post['edited']).')</em></p>'."\n"; ?>
+<?php if (strlen($user_image_reason)>0) echo $user_image_reason; // [Mod] Image Award reason added ?>
 					</div>
 <?php if ($signature != '') echo "\t\t\t\t\t".'<div class="postsignature postmsg"><hr />'.$signature.'</div>'."\n"; ?>
 				</div>
