@@ -240,6 +240,22 @@ if (isset($_GET['tid']))
 			// Move the posts to the new topic
 			$db->query('UPDATE '.$db->prefix.'posts SET topic_id='.$new_tid.' WHERE id IN('.$posts.')') or error('Unable to move posts into new topic', __FILE__, __LINE__, $db->error());
 
+			// Determine the users subscribed to both topics
+			$result = $db->query('SELECT user_id FROM '.$db->prefix.'topic_subscriptions WHERE topic_id IN('.$tid.','.$new_tid.')') or error('Unable to determine users subscribed to both topics', __FILE__, __LINE__, $db->error());
+			$results = array();
+
+			// Fill an array as long as we find users
+			while ($otusr = $db->fetch_assoc($result))
+			{
+			 $results[] = $otusr['user_id'];
+			}
+
+			// Get a comma-separated list of them
+			$otusr = implode (", ",$results);
+			
+			// Make sure no user from the old topic is already subscribed to the new topic
+			$db->query('DELETE FROM '.$db->prefix.'topic_subscriptions WHERE topic_id ='.$new_tid.' AND user_id IN ('.$otusr.')') or error('Unable to clear database before merging', __FILE__, __LINE__, $db->error());
+
 			// Apply every subscription to both topics
 			$db->query('INSERT INTO '.$db->prefix.'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$new_tid.' FROM '.$db->prefix.'topic_subscriptions WHERE topic_id='.$tid) or error('Unable to copy existing subscriptions', __FILE__, __LINE__, $db->error());
 
