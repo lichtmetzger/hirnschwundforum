@@ -79,9 +79,9 @@ if (isset($_POST['form_sent']))
 		$errors[] = sprintf($lang_post['Flood start'], $pun_user['g_post_flood'], $pun_user['g_post_flood'] - (time() - $pun_user['last_post']));
 
 	// Mod double post protection
-	// Do not use this for thread 40, because that's
-	// the "stupid" forum game
-	else if (!isset($_POST['preview']) && $tid && $tid != 40)
+	// Do not use this for thread 40 and 362, because those
+	// are the "stupid" forum games
+	else if (!isset($_POST['preview']) && $tid && $tid != 40 && $tid != 362)
 	{
 		if($cur_posting['last_post'] != '' && $pun_user['username'] == $cur_posting['last_poster'] && (time() - $cur_posting['last_post']) < $pun_user['g_double_post'] * 60)
 			$errors[] = $lang_mod_double_post['Double post start'].' '.$pun_user['g_double_post'].' '.$lang_mod_double_post['Double post end'];	
