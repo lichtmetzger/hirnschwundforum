@@ -62,7 +62,7 @@ bbcodeSettings = {
  			{name:':zank:', replaceWith:':zank:', className:"col4-2"},
  			{name:':voegasm:', replaceWith:':voegasm:', className:"col4-3"},
  			{name:':ugly:', replaceWith:':ugly:', className:"col4-4"},
- 			{name:':smoke:', replaceWith:':smoke:', className:"col4-5"},
+ 			{name:':palm:', replaceWith:':palm:', className:"col4-5"},
   ]
 }
 

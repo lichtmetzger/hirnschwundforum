@@ -1,0 +1,80 @@
+From fda3b6832f8df9f4dff489edae7dcb98f62a3bfc Mon Sep 17 00:00:00 2001
+From: Danny Schmarsel <danny@schmarsel.de>
+Date: Mon, 19 Dec 2016 22:27:06 +0100
+Subject: [PATCH] Add Facepalm emoji
+
+The original Twemoji looks like garbage on 20x20px, so I built my own.
+---
+ img/smilies/palm.png           | Bin 0 -> 877 bytes
+ include/parser.php             |   1 +
+ markitup/sets/bbcode/set.js    |   2 +-
+ markitup/sets/bbcode/style.css |   2 +-
+ 4 files changed, 3 insertions(+), 2 deletions(-)
+ create mode 100644 img/smilies/palm.png
+
+diff --git a/img/smilies/palm.png b/img/smilies/palm.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..9e6872cac978374e81db42d4fc66456ad9fb7fa7
+GIT binary patch
+literal 877
+zcmV-z1CsoSP)<h;3K|Lk000e1NJLTq000yK000yS1^@s6jfou%00006VoOIv0RI60
+z0RN!9r;`8x010qNS#tmY4`BcR4`BhQKc{H`000McNliru;0zNL7BqSdgsT7m0{Tfr
+zK~y-)y_8#PTvZr`pKqTsv&T+4p@|7elQcFdtxy`17)hD2F-oBgsYr<6MQ?0HQ7?)=
+zzzctaP%7REEk&#GfVNR<h*(Qvu~;M16zmuew8=Eb*)#j_d0`SzXB;oY_inAldU*NP
+zyI%N@C6x~J>c|s_jsa<)Wn()BI*FR+r0?BJ{|cyAj&xy|Zy;o<Sh<X$C#C!SY(=2X
+zjAV%Pf|_m$D*+mUzl>;537bcvW76}%<llgL<wzH%`PE9IH#PHX8>OHbRJk!b!N~q4
+zcHK8$3A%_#zx2F!6Tt9ur^L^lN~&p|R<|xSm5q}bXeT|C1|WT~mqh1F1lVYKU>%XZ
+zxw$Z2f5(Z<XY)sI@#x^h+#b3IU&OOAT%W$qj;=QLc8_A!b#iSkL@_JPGov%ZLjcAz
+zqsN2RjsqvMKSw-%cz~oEC%3T3_Vx}sTDw4%iK!`?2VUUzFCJRSXDDL;)=wqN@?~Fd
+z_uxU6EEh+W`ec&0W236f-p-Qg@2A1}nlJD8v^84g!?uwME4;hnva=xp5S4s9*n%yu
+z7ie$VMa;HXy!tkueEuzG&o5B)BLJR#`XL@Z(7cIk0kD>vI^DSbCY~>(P!a?fj!lgS
+zwFwtneFDFTRhZ?~mmfh05h**%2*3aWGb(tflJ`T_F!9#bDU?b81cf|5UOY}bW}}gA
+zTq&#hP2e3?=e}F={s?d0k66Q^<om1_OBAP1vb(W>Z5bE_h)AWE{sO>S_<mYiTMBOh
+zeM<$O+PF>L4_Uo8&xaSzkh?fe5GaO#0;<rkBf)F0JoZ=QIRLqIdNjWK!Fv4r58qmL
+z_BINNDm4G_JgHh2(*VN|K>o?yW$76|1YkX|uRbW{vvPMO`BaU3^zk;^+g1~<;>H|I
+z!^AYJHr67@i9h{iZ+yQE#GQtwzGCQ{HzeF1gn}D0s>39DvTQkQmBcs0orH1*I8+7p
+z86wYZmO}M{of#e?lre-fuyd<ml}QZFO3(PG{2%%qDK{dy#0<%f00000NkvXXu0mjf
+D%^i&q
+
+literal 0
+HcmV?d00001
+
+diff --git a/include/parser.php b/include/parser.php
+index 3b0a482..5caf474 100644
+--- a/include/parser.php
++++ b/include/parser.php
+@@ -73,6 +73,7 @@ $smilies = array(
+ 	'<3' => 'heart.png',
+ 	':shock:' => 'shock.png',
+ 	':smoke:' => 'smokin.gif',
++	':palm:' => 'palm.png',
+ 	':oops:'=> 'oops.png',
+ 	':Zzz:'=> 'sleep.png',
+ 	':x' => 'sick.png',
+diff --git a/markitup/sets/bbcode/set.js b/markitup/sets/bbcode/set.js
+index 5a566fc..f68b193 100644
+--- a/markitup/sets/bbcode/set.js
++++ b/markitup/sets/bbcode/set.js
+@@ -62,7 +62,7 @@ bbcodeSettings = {
+  			{name:':zank:', replaceWith:':zank:', className:"col4-2"},
+  			{name:':voegasm:', replaceWith:':voegasm:', className:"col4-3"},
+  			{name:':ugly:', replaceWith:':ugly:', className:"col4-4"},
+- 			{name:':smoke:', replaceWith:':smoke:', className:"col4-5"},
++ 			{name:':palm:', replaceWith:':palm:', className:"col4-5"},
+   ]
+ }
+ 
+diff --git a/markitup/sets/bbcode/style.css b/markitup/sets/bbcode/style.css
+index 4b7a4cf..09a112a 100644
+--- a/markitup/sets/bbcode/style.css
++++ b/markitup/sets/bbcode/style.css
+@@ -222,5 +222,5 @@
+ 		background-image:url(../../../img/smilies/ugly.png);
+ 	}
+ 	.markItUp .markItUpButton26 .col4-5 a {
+-		background-image:url(../../../img/smilies/smokin.gif);
++		background-image:url(../../../img/smilies/palm.png);
+ 	}
+-- 
+2.9.0
+

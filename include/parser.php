@@ -73,6 +73,7 @@ $smilies = array(
 	'<3' => 'heart.png',
 	':shock:' => 'shock.png',
 	':smoke:' => 'smokin.gif',
+	':palm:' => 'palm.png',
 	':oops:'=> 'oops.png',
 	':Zzz:'=> 'sleep.png',
 	':x' => 'sick.png',
