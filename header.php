@@ -103,11 +103,23 @@ if (!defined('PUN_ALLOW_INDEX'))
 ?>
 <title><?php echo generate_page_title($page_title, $p) ?></title>
 <link rel="stylesheet" type="text/css" href="style/<?php echo $pun_user['style'].'.css?id=10' ?>" />
-<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="//code.jquery.com/jquery-migrate-1.4.1.min.js"></script>
 
 <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 <?php
+
+if (basename($_SERVER['PHP_SELF']) == 'viewtopic.php')
+{
+	if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/like_mod.php'))
+		require PUN_ROOT.'lang/'.$pun_user['language'].'/like_mod.php';
+	else
+		require PUN_ROOT.'lang/English/like_mod.php';
+		
+	echo '<script type="text/javascript" src="include/like_mod.js"></script>'."\n";
+	echo '<script type="text/javascript">$(document).ready(function(){$(\'a.like\').wsLiker(\''.$pun_user['id'].'\', \''.pun_htmlspecialchars($pun_user['username']).'\', \''.$db->escape($lang_like_mod['Like']).'\', \''.$db->escape($lang_like_mod['Unlike']).'\', \''.$db->escape($lang_like_mod['Like this post']).'\');});</script>'."\n";
+}
 
 if (defined('PUN_ADMIN_CONSOLE'))
 {

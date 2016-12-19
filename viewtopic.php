@@ -254,7 +254,7 @@ require PUN_ROOT.'include/poll/poll_viewtopic.php';
 
 // Retrieve the posts (and their respective poster/online status)
 // add "g.g_pm, u.messages_enable," - New PMS
-$result = $db->query('SELECT u.email, u.title, u.url, u.social_profile_links, u.location, u.signature, u.email_setting, u.num_posts, u.num_warnings, u.registered, u.admin_note, u.messages_enable, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, p.edit_post, g.g_id, g.g_user_title, g.g_pm, g.g_promote_next_group, a.award, a.uid AS awarduser, a.pid AS awardpost, a.reason, o.user_id AS is_online FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'awards AS a ON a.uid=u.id LEFT JOIN '.$db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT u.email, u.title, u.url, u.social_profile_links, u.location, u.signature, u.email_setting, u.num_posts, u.num_warnings, u.registered, u.admin_note, u.messages_enable, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, p.likes, p.edit_post, g.g_id, g.g_user_title, g.g_pm, g.g_promote_next_group, a.award, a.uid AS awarduser, a.pid AS awardpost, a.reason, o.user_id AS is_online FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'awards AS a ON a.uid=u.id LEFT JOIN '.$db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 while ($cur_post = $db->fetch_assoc($result))
 {
 	$post_count++;
@@ -388,6 +388,22 @@ if ($cur_post['num_warnings'] > 0)
 	}
 
 	// Generation post action array (quote, edit, delete etc.)
+	if (!$pun_user['is_guest'] && $cur_post['poster_id'] != $pun_user['id']) // Like mod
+	{
+		if (empty($cur_post['likes']))
+			$like_button = '<li class="postlike"><span><a href="like.php?tid='.$id.'&amp;pid='.$cur_post['id'].'" class="like">'.$lang_like_mod['Like'].'</a></span></li>';
+		else
+		{
+			$likes = unserialize($cur_post['likes']);
+			if (isset($likes[$pun_user['id']]))
+				$like_button = '<li class="postunlike"><span><a href="like.php?tid='.$id.'&amp;pid='.$cur_post['id'].'&amp;unlike=1" class="like">'.$lang_like_mod['Unlike'].'</a></span></li>';
+			else
+				$like_button = '<li class="postlike"><span><a href="like.php?tid='.$id.'&amp;pid='.$cur_post['id'].'" class="like">'.$lang_like_mod['Like'].'</a></span></li>';
+		}
+	}
+	else
+		$like_button = '';
+	
 	if (!$is_admmod)
 	{
 		if (!$pun_user['is_guest'])
@@ -406,6 +422,9 @@ if ($cur_post['num_warnings'] > 0)
 			if (($cur_topic['post_replies'] == '' && $pun_user['g_post_replies'] == '1') || $cur_topic['post_replies'] == '1')
 				$post_actions[] = '<li class="postquote"><span><a href="post.php?tid='.$id.'&amp;qid='.$cur_post['id'].'">'.$lang_topic['Quote'].'</a></span></li>';
 		}
+		
+		$post_actions[] = $like_button;
+		
 	}
 	else
 	{
@@ -424,6 +443,8 @@ if ($cur_post['num_warnings'] > 0)
 			$post_actions[] = '<li class="postreport"><span><a href="admin_loader.php?plugin=AMP_Warning_mod.php&amp;tid='.$id.'&amp;pid='.$cur_post['id'].'&amp;uid='.$cur_post['poster_id'].'">'.$lang_warning['Warn'].'</a></span></li>';
 
 		$post_actions[] = '<li class="postquote"><span><a href="post.php?tid='.$id.'&amp;qid='.$cur_post['id'].'">'.$lang_topic['Quote'].'</a></span></li>';
+		//like mod
+		$post_actions[] = $like_button;
 	}
 
 	// Perform the main parsing of the message (BBCode, smilies, censor words etc)
@@ -477,9 +498,52 @@ if ($cur_post['num_warnings'] > 0)
 </div>
 
 <?php
-
+if (!empty($cur_post['likes']))
+{
+	$likes = unserialize($cur_post['likes']);
+	$comma = $output = '';
+?>
+<div class="blockpost <?php echo ($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?> liker">
+	<div class="box">
+		<div class="inbox">
+			<div class="postbody">
+				<div class="postleft">
+					<dl>
+						<dd class="usertitle"><strong><?php echo (count($likes) == 1) ? $lang_like_mod['Like this post'] : $lang_like_mod['Like this post multiple']; ?></strong></dd>
+					</dl>
+				</div>
+				<div class="postright">
+					<div class="postmsg">
+						<p>
+						<?php
+						foreach($likes as $ids => $like_username)
+						{
+							$like_username = pun_htmlspecialchars($like_username);
+							
+							if ($pun_user['g_view_users'] == '1')
+								$like_info = '<a href="profile.php?id='.$ids.'">'.$like_username.'</a>';
+							else
+								$like_info = $like_username;
+							
+							if (empty($comma))
+								$like_pseudo = '<span title="'.$like_username.'">'.$like_info.'</span>';
+							else
+								$like_pseudo .= '<span title="'.$like_username.'">, '.$like_info.'</span>';
+								
+							$comma = true;
+						}
+						echo $like_pseudo;
+						?>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php
 }
-
+}
 ?>
 <div class="postlinksb">
 	<div class="inbox crumbsplus">
