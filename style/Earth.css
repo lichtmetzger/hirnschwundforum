@@ -169,8 +169,7 @@ img.header-logo {
 ----------------------------------------------------------------*/
 
 .pun {
-	/*schmatzler: change width*/
-	max-width: 864px;
+	max-width: 1070px;
 	min-width: 320px;
 	margin: 0 auto;
 	padding: 30px 40px;

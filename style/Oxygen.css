@@ -220,8 +220,7 @@ html, body {
 	}
 
 .pun {
-	/*schmatzler: change width*/
-	max-width: 864px;
+	max-width: 1070px;
 	min-width: 320px;
 	width: 95%;
 	margin: 0 auto;
