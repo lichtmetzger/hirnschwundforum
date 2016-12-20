@@ -2556,6 +2556,44 @@ function generate_user_location($url)
 			else
 				$location = $lang_online['in hidden forum'];
 		break;
+//arcade
+		case stristr($url, 'arcade_play.php?id'):	
+			//Lets find out the game name =)
+			$gid = filter_var($url, FILTER_SANITIZE_NUMBER_INT);
+		
+		if ($gid)
+		{
+			$result = $db->query('SELECT game_name FROM '.$db->prefix.'arcade_games WHERE game_id = \''.$db->escape($gid).'\'', true) or error('Unable to get user\'s current location from arcade_play.php', __FILE__, __LINE__, $db->error());
+			$info = $db->fetch_assoc($result);
+
+				$game = '<a href="arcade_play.php?id='.$gid.'">'.pun_htmlspecialchars($info['game_name']).'</a>';
+				$location = sprintf($lang_online['playing specific game'], $game);
+		}
+			else
+				$location = $lang_online['playing a game'];
+		break;
+		case stristr($url, 'arcade_ranking.php?id'):	
+			//Lets find out the game name =)
+			$rid = filter_var($url, FILTER_SANITIZE_NUMBER_INT);
+		
+		if ($rid)
+		{
+			$result = $db->query('SELECT game_name FROM '.$db->prefix.'arcade_games WHERE game_id = \''.$db->escape($rid).'\'', true) or error('Unable to get user\'s current location from arcade_ranking.php', __FILE__, __LINE__, $db->error());
+			$info = $db->fetch_assoc($result);
+
+				$game = '<a href="arcade_ranking.php?id='.$rid.'">'.pun_htmlspecialchars($info['game_name']).'</a>';
+				$location = sprintf($lang_online['rank for specific game'], $game);
+		}
+			else
+				$location = $lang_online['watching ranks'];
+		break;
+		case stristr($url, 'arcade_userstats.php'):
+			$location = $lang_online['arcadestats'];
+		break;
+		case stristr($url, 'arcade.php'):
+			$location = $lang_online['arcademain'];
+		break;
+//arcade
 		case stristr($url, 'moderate.php'):
 			$location = $lang_online['moderating'];
 		break;

@@ -39,6 +39,13 @@ $lang_online = array(
 'viewing team'					=>	'Viewing the moderating team',
 'posting'						=>	'Posting...',
 'in hidden forum'						=>	'In Hidden Forum',
+//arcade mod
+'playing specific game'				=>	'is currently playing: %s',
+'playing a game'				=>	'is currently playing a game',
+'rank for specific game'			=>	'is looking at ranks for: %s',
+'watching ranks'				=>	'is looking at a ranking list',
+'arcadestats'					=>	'is looking at top scores',
+'arcademain'					=>	'has joined the arcade',
 
 //Language for viewforum & viewtopic
 'online topic'					=>	'Users in this topic: %s guests, %s',
