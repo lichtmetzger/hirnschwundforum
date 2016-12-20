@@ -303,8 +303,8 @@ echo '<span><a href="arcade_play.php?id='.$line['game_id'].'" title="'.$lang_arc
 			for ($i=1;$i<=$cp;$i++)
 			if (($i-1)==$s_page) echo "<strong> $i </strong>";
 			else echo ' <a href="'.$_SERVER['PHP_SELF'].'?page='.($i-1).'#pages">'.$i.'</a> ';
+			echo '</p></div>';
 		}
-		echo '</p></div>';
 		
 
 	// Old themes need this
@@ -383,8 +383,8 @@ echo '<span><a href="arcade_play.php?id='.$line['game_id'].'" title="'.$lang_arc
 			for ($i=1;$i<=$cp;$i++)
 			if (($i-1)==$s_page) echo "<strong> $i </strong>";
 			else echo ' <a href="'.$_SERVER['PHP_SELF'].'?page='.($i-1).'#pages">'.$i.'</a> ';
+			echo '</p></div>';
 		}
-		echo '</p></div>';
 		
 		// Old themes need this
 		echo '<div class="clearer"></div>';
