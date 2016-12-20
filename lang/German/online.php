@@ -40,12 +40,12 @@ $lang_online = array(
 'posting'						=>	'Schreibt...',
 'in hidden forum'						=>	'Im versteckten Forum',
 //arcade mod
-'playing specific game'				=>	'spielt gerade: %s',
-'playing a game'				=>	'spielt gerade ein Spiel',
-'rank for specific game'			=>	'in der Bestenliste von: %s',
-'watching ranks'				=>	'betrachtet eine Bestenliste',
-'arcadestats'					=>	'betrachtet Top-Highscores',
-'arcademain'					=>	'ist in der Spielhalle',
+'playing specific game'				=>	'Spielt gerade: %s',
+'playing a game'				=>	'Spielt gerade ein Spiel',
+'rank for specific game'			=>	'In der Bestenliste von: %s',
+'watching ranks'				=>	'Betrachtet eine Bestenliste',
+'arcadestats'					=>	'Betrachtet Top-Highscores',
+'arcademain'					=>	'Ist in der Spielhalle',
 
 //Language for viewforum & viewtopic
 'online topic'					=>	'Benutzer in diesem Thema: %s Gäste, %s',
