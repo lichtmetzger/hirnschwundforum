@@ -102,7 +102,7 @@ if (!defined('PUN_ALLOW_INDEX'))
 
 ?>
 <title><?php echo generate_page_title($page_title, $p) ?></title>
-<link rel="stylesheet" type="text/css" href="style/<?php echo $pun_user['style'].'.css?id=10' ?>" />
+<link rel="stylesheet" type="text/css" href="style/<?php echo $pun_user['style'].'.css?id=11' ?>" />
 <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
 <script src="//code.jquery.com/jquery-migrate-1.4.1.min.js"></script>
 
