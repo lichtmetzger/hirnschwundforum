@@ -12,20 +12,21 @@ $game_name = (isset($_POST['game_name'])) ? $_POST['game_name'] : $_POST['gname'
 // str_replace strips all spaces present in the score string
 $score = (isset($_POST['score'])) ? str_replace(" ", "", $_POST['score']) : $_POST['gscore'];
 
+// This is a fix for var "score" which is sent as "Score" and not as "score" like in game "Easter Egg Catch"
+if (empty($score))
+{
+	// str_replace strips all spaces present in the Score string
+	$score = (isset($_POST['Score'])) ? str_replace(" ", "", $_POST['Score']) : $_POST['gscore'];
+
+	if (!is_numeric($score))
+		message($lang_common['Bad request']);
+}
+
 if (!is_numeric($score))
 	message($lang_common['Bad request']);
 
 $topscore = 0;
 $now = time();
-
-// This is a fix for var "score" which is sent as "Score" and not as "score" like in game "Easter Egg Catch"
-if (empty($score))
-{
-	$score = $_POST['Score'];
-
-	if (!is_numeric($score))
-		message($lang_common['Bad request']);
-}
 
 if (!empty($game_name) && !empty($score))
 {
