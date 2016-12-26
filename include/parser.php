@@ -80,7 +80,8 @@ $smilies = array(
 	':X' => 'sick.png',
 	':teen:' => 'teen.png',
 	':shit:' => 'shit.png',
-	':kirin:' => 'kirin.png'
+	':kirin:' => 'kirin.png',
+	':Sandra89:' => 'sandra89.png'
 	);
 
 //
